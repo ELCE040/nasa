@@ -37,9 +37,14 @@ class Team {
   final String name;
   final String wardId;
   final String wardName;
+  final String leagueId;
+  final String leagueName;
   final int foundedYear;
   final String coachName;
   final String? sponsorName;
+  final String? groupName;
+  final String? logoUrl;
+  final bool dashboardOnly;
   int played;
   int won;
   int drawn;
@@ -52,9 +57,14 @@ class Team {
     required this.name,
     required this.wardId,
     required this.wardName,
+    this.leagueId = '',
+    this.leagueName = '',
     required this.foundedYear,
     required this.coachName,
     this.sponsorName,
+    this.groupName,
+    this.logoUrl,
+    this.dashboardOnly = false,
     this.played = 0,
     this.won = 0,
     this.drawn = 0,
@@ -65,6 +75,28 @@ class Team {
 
   int get points => won * 3 + drawn;
   int get goalDifference => goalsFor - goalsAgainst;
+}
+
+class League {
+  final String id;
+  final String name;
+  final String description;
+  final String format; // 'league', 'knockout', 'group_knockout'
+  final int advancingTeams;
+  final String status;
+
+  const League({
+    required this.id,
+    required this.name,
+    this.description = '',
+    this.format = 'league',
+    this.advancingTeams = 2,
+    this.status = 'active',
+  });
+
+  bool get isKnockout => format == 'knockout';
+  bool get isGroupKnockout => format == 'group_knockout';
+  bool get isLeague => format == 'league';
 }
 
 class Player {
@@ -80,6 +112,7 @@ class Player {
   final double heightM;
   final String bio;
   final String parentPhone;
+  final String? imageUrl;
 
   int goals;
   int assists;
@@ -102,6 +135,7 @@ class Player {
     required this.heightM,
     required this.bio,
     required this.parentPhone,
+    this.imageUrl,
     this.goals = 0,
     this.assists = 0,
     this.appearances = 0,
@@ -110,6 +144,54 @@ class Player {
     this.redCards = 0,
     this.consentStatus = ConsentStatus.notSent,
   });
+
+  factory Player.fromJson(Map<String, dynamic> json) => Player(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        age: json['age'] as int,
+        position: json['position'] as String,
+        teamId: json['teamId'] as String,
+        teamName: json['teamName'] as String,
+        wardName: json['wardName'] as String,
+        jerseyNumber: json['jerseyNumber'] as int,
+        preferredFoot: json['preferredFoot'] as String,
+        heightM: (json['heightM'] as num).toDouble(),
+        bio: json['bio'] as String,
+        parentPhone: json['parentPhone'] as String,
+        imageUrl: json['imageUrl'] as String?,
+        goals: json['goals'] as int? ?? 0,
+        assists: json['assists'] as int? ?? 0,
+        appearances: json['appearances'] as int? ?? 0,
+        cleanSheets: json['cleanSheets'] as int? ?? 0,
+        yellowCards: json['yellowCards'] as int? ?? 0,
+        redCards: json['redCards'] as int? ?? 0,
+        consentStatus: ConsentStatus.values.firstWhere(
+            (e) => e.name == json['consentStatus'],
+            orElse: () => ConsentStatus.notSent),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'age': age,
+        'position': position,
+        'teamId': teamId,
+        'teamName': teamName,
+        'wardName': wardName,
+        'jerseyNumber': jerseyNumber,
+        'preferredFoot': preferredFoot,
+        'heightM': heightM,
+        'bio': bio,
+        'parentPhone': parentPhone,
+        'imageUrl': imageUrl,
+        'goals': goals,
+        'assists': assists,
+        'appearances': appearances,
+        'cleanSheets': cleanSheets,
+        'yellowCards': yellowCards,
+        'redCards': redCards,
+        'consentStatus': consentStatus.name,
+      };
 
   bool get isMinor => age < 18;
 
@@ -139,16 +221,89 @@ class Player {
   }
 }
 
+class PlayerFanRatingData {
+  final double formAvg;
+  final double impactAvg;
+  final double workRateAvg;
+  final double overallAvg;
+  final int totalVotes;
+  final int? userForm;
+  final int? userImpact;
+  final int? userWorkRate;
+
+  const PlayerFanRatingData({
+    required this.formAvg,
+    required this.impactAvg,
+    required this.workRateAvg,
+    required this.overallAvg,
+    required this.totalVotes,
+    this.userForm,
+    this.userImpact,
+    this.userWorkRate,
+  });
+
+  bool get hasUserVoted =>
+      userForm != null && userImpact != null && userWorkRate != null;
+}
+
+/// 6-attribute scout rating used for the radar chart on the player card.
+class PlayerScoutRatingData {
+  final double pace;
+  final double shooting;
+  final double passing;
+  final double dribbling;
+  final double defending;
+  final double physical;
+  final int totalVotes;
+
+  // User's submitted ratings (null = not yet voted)
+  final int? userPace;
+  final int? userShooting;
+  final int? userPassing;
+  final int? userDribbling;
+  final int? userDefending;
+  final int? userPhysical;
+
+  const PlayerScoutRatingData({
+    required this.pace,
+    required this.shooting,
+    required this.passing,
+    required this.dribbling,
+    required this.defending,
+    required this.physical,
+    required this.totalVotes,
+    this.userPace,
+    this.userShooting,
+    this.userPassing,
+    this.userDribbling,
+    this.userDefending,
+    this.userPhysical,
+  });
+
+  /// Overall scout rating out of 100
+  double get overallAvg =>
+      (pace + shooting + passing + dribbling + defending + physical) / 6;
+
+  /// Converted to /10 for display
+  double get fanRating => overallAvg / 10.0;
+
+  bool get hasUserVoted => userPace != null;
+}
+
 class MatchEvent {
   final int minute;
   final String type; // Goal, Yellow Card, Red Card, Substitution
   final String teamName;
   final String playerName;
+  final String? assistName;
+  final bool isPenalty;
   const MatchEvent({
     required this.minute,
     required this.type,
     required this.teamName,
     required this.playerName,
+    this.assistName,
+    this.isPenalty = false,
   });
 }
 
@@ -161,11 +316,18 @@ class Match {
   final String venue;
   final String wardName;
   final String competition;
+  final String leagueId;
+  final String leagueName;
   final DateTime kickoff;
+  final String stage;
+  final String? groupName;
+  final String? playerOfMatchId;
+  final String? playerOfMatchName;
   MatchStatus status;
   int homeScore;
   int awayScore;
   int minute;
+  String phase;
   final List<MatchEvent> events;
   final double travelDistanceKm;
 
@@ -178,14 +340,25 @@ class Match {
     required this.venue,
     required this.wardName,
     required this.competition,
+    this.leagueId = '',
+    this.leagueName = '',
     required this.kickoff,
+    this.stage = 'League Match',
+    this.groupName,
+    this.playerOfMatchId,
+    this.playerOfMatchName,
     this.status = MatchStatus.upcoming,
     this.homeScore = 0,
     this.awayScore = 0,
     this.minute = 0,
+    this.phase = 'First Half',
     List<MatchEvent>? events,
-    this.travelDistanceKm = 0,
+    this.travelDistanceKm = 0.0,
   }) : events = events ?? [];
+
+  String get displayCompetition => leagueName.isNotEmpty
+      ? leagueName
+      : (competition.isNotEmpty ? competition : 'Competition');
 }
 
 class NewsArticle {
@@ -196,6 +369,7 @@ class NewsArticle {
   final DateTime date;
   final String category;
   final String author;
+  final String? imageUrl;
   const NewsArticle({
     required this.id,
     required this.title,
@@ -204,6 +378,7 @@ class NewsArticle {
     required this.date,
     required this.category,
     required this.author,
+    this.imageUrl,
   });
 }
 
@@ -404,6 +579,9 @@ class Sponsorship {
   final double amountMwk;
   final String message;
   final DateTime date;
+  final String? imageUrl;
+  final String? linkUrl;
+
   const Sponsorship({
     required this.id,
     required this.sponsorName,
@@ -413,6 +591,8 @@ class Sponsorship {
     required this.amountMwk,
     required this.message,
     required this.date,
+    this.imageUrl,
+    this.linkUrl,
   });
 }
 

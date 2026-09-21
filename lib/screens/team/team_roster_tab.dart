@@ -15,11 +15,16 @@ class TeamRosterTab extends StatelessWidget {
     return AnimatedBuilder(
       animation: app,
       builder: (context, _) {
+        final brandPrimary = Theme.of(context).colorScheme.primary;
         final roster = app.playersOfTeam(app.myTeamId)
           ..sort((a, b) => a.jerseyNumber.compareTo(b.jerseyNumber));
         return Scaffold(
           floatingActionButton: FloatingActionButton(
-            child: const Icon(Icons.person_add_alt),
+            heroTag: 'fab_roster',
+            backgroundColor: brandPrimary,
+            foregroundColor: Colors.white,
+            elevation: 4,
+            child: const Icon(Icons.add, size: 28),
             onPressed: () => Navigator.push(context,
                 MaterialPageRoute(builder: (_) => const PlayerFormScreen())),
           ),
@@ -36,18 +41,40 @@ class TeamRosterTab extends StatelessWidget {
                     final p = roster[i];
                     return Container(
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: NasaColors.line)),
+                        color: NasaColors.bgCard,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: NasaColors.border),
+                      ),
                       child: ListTile(
-                        leading: InitialsAvatar(text: p.name, radius: 20),
+                        leading: InitialsAvatar(
+                            text: p.name, radius: 20, imageUrl: p.imageUrl),
                         title: Text(p.name,
                             style: const TextStyle(
-                                fontWeight: FontWeight.w700, fontSize: 13.5)),
+                                fontWeight: FontWeight.w800,
+                                fontSize: 14,
+                                color: Colors.white)),
                         subtitle: Text(
                             '#${p.jerseyNumber} · ${p.position} · Age ${p.age}',
-                            style: const TextStyle(fontSize: 11.5)),
-                        trailing: const Icon(Icons.chevron_right),
+                            style: const TextStyle(
+                                fontSize: 12, color: NasaColors.textMuted)),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              tooltip: 'Edit player',
+                              icon: const Icon(Icons.edit_outlined,
+                                  color: Colors.white),
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => PlayerFormScreen(player: p),
+                                ),
+                              ),
+                            ),
+                            const Icon(Icons.chevron_right,
+                                color: NasaColors.textMuted),
+                          ],
+                        ),
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(

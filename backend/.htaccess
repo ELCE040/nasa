@@ -1,0 +1,3 @@
+PassengerNodejs /usr/local/bin/node
+PassengerStartupFile index.js
+PassengerAppEnvVars PORT 3000

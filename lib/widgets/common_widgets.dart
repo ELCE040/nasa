@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import '../models/models.dart';
+import '../services/api_service.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
+import '../screens/login_screen.dart';
 
 /// A round avatar showing initials — used everywhere a player/team/scout
 /// photo would normally go, so the UI works fully offline with no media.
 class InitialsAvatar extends StatelessWidget {
+  static final Set<String> _loggedImageRequests = <String>{};
   final String text;
   final double radius;
   final Color? background;
   final Color? foreground;
+  final String? imageUrl;
 
   const InitialsAvatar({
     super.key,
@@ -17,6 +21,7 @@ class InitialsAvatar extends StatelessWidget {
     this.radius = 22,
     this.background,
     this.foreground,
+    this.imageUrl,
   });
 
   String get _initials {
@@ -30,15 +35,64 @@ class InitialsAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
+    final bg = background ?? NasaColors.bgCardHover;
+    final fg = foreground ?? NasaColors.gold;
+
+    // Fallback initials circle
+    Widget initialsCircle = CircleAvatar(
       radius: radius,
-      backgroundColor: background ?? NasaColors.pitch.withValues(alpha: 0.12),
+      backgroundColor: bg,
       child: Text(
         _initials,
         style: TextStyle(
-          color: foreground ?? NasaColors.pitch,
+          color: fg,
           fontWeight: FontWeight.w800,
           fontSize: radius * 0.62,
+        ),
+      ),
+    );
+
+    final rawImageUrl = imageUrl?.trim();
+    if (rawImageUrl == null || rawImageUrl.isEmpty || rawImageUrl == 'null') {
+      return initialsCircle;
+    }
+    final resolvedImageUrl = ApiService.resolveUrl(rawImageUrl);
+    if (_loggedImageRequests.add(resolvedImageUrl)) {
+      debugPrint('[IMAGE DISPLAY] Requesting photo for $text: $resolvedImageUrl');
+    }
+
+    return ClipOval(
+      child: SizedBox(
+        width: radius * 2,
+        height: radius * 2,
+        child: Image.network(
+          resolvedImageUrl,
+          fit: BoxFit.cover,
+          width: radius * 2,
+          height: radius * 2,
+          loadingBuilder: (context, child, progress) {
+            if (progress == null) return child;
+            return CircleAvatar(
+              radius: radius,
+              backgroundColor: bg,
+              child: SizedBox(
+                width: radius * 0.8,
+                height: radius * 0.8,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: fg,
+                  value: progress.expectedTotalBytes != null
+                      ? progress.cumulativeBytesLoaded /
+                          progress.expectedTotalBytes!
+                      : null,
+                ),
+              ),
+            );
+          },
+          errorBuilder: (context, error, stack) {
+            debugPrint('[IMAGE DISPLAY] Failed for $text at $resolvedImageUrl: $error');
+            return initialsCircle;
+          },
         ),
       ),
     );
@@ -58,21 +112,21 @@ class WardTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: NasaColors.chalk,
+        color: NasaColors.bgNavy,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: NasaColors.line),
+        border: Border.all(color: NasaColors.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: NasaColors.slate),
+          Icon(icon, size: 12, color: NasaColors.gold),
           const SizedBox(width: 4),
           Text(
             label,
             style: const TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: NasaColors.slate,
+              color: NasaColors.textMain,
             ),
           ),
         ],
@@ -168,7 +222,16 @@ class SectionHeader extends StatelessWidget {
 class StatPill extends StatelessWidget {
   final String label;
   final String value;
-  const StatPill({super.key, required this.label, required this.value});
+  final Color? textColor;
+  final Color? labelColor;
+  
+  const StatPill({
+    super.key, 
+    required this.label, 
+    required this.value,
+    this.textColor = Colors.white,
+    this.labelColor = NasaColors.textMuted,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -176,16 +239,16 @@ class StatPill extends StatelessWidget {
       children: [
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w800,
             fontSize: 17,
-            color: NasaColors.ink,
+            color: textColor,
           ),
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(fontSize: 11, color: NasaColors.slate),
+          style: TextStyle(fontSize: 11, color: labelColor),
         ),
       ],
     );
@@ -268,19 +331,23 @@ class RoleSwitcherButton extends StatelessWidget {
     return PopupMenuButton<UserRole>(
       tooltip: 'Switch role',
       icon: const Icon(Icons.account_circle_outlined),
-      onSelected: AppState.instance.setRole,
+      onSelected: (role) {
+        if (role == UserRole.team) {
+          if (AppState.instance.currentTeam != null) {
+            AppState.instance.setRole(role, AppState.instance.currentTeam);
+          } else {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+          }
+        } else {
+          AppState.instance.setRole(role);
+        }
+      },
       itemBuilder: (context) => [
         _roleItem(
           role: UserRole.viewer,
           currentRole: currentRole,
           icon: Icons.groups_2_outlined,
           label: 'Viewer / Fan',
-        ),
-        _roleItem(
-          role: UserRole.scout,
-          currentRole: currentRole,
-          icon: Icons.travel_explore,
-          label: 'Scout',
         ),
         _roleItem(
           role: UserRole.team,
@@ -311,6 +378,27 @@ class RoleSwitcherButton extends StatelessWidget {
           Text(label),
         ],
       ),
+    );
+  }
+}
+
+/// Available in every main app bar; respects the current role's data scope.
+class AppRefreshButton extends StatelessWidget {
+  const AppRefreshButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: 'Refresh',
+      icon: const Icon(Icons.refresh),
+      onPressed: () async {
+        try {
+          await AppState.instance.refreshCurrentData();
+          if (context.mounted) showNasaSnack(context, 'App reloaded');
+        } catch (_) {
+          if (context.mounted) showNasaSnack(context, 'Could not refresh', success: false);
+        }
+      },
     );
   }
 }

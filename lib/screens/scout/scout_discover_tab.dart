@@ -91,23 +91,24 @@ class _ScoutDiscoverTabState extends State<ScoutDiscoverTab> {
                         return Container(
                           margin: const EdgeInsets.only(bottom: 8),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: NasaColors.bgCard,
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: NasaColors.line),
+                            border: Border.all(color: NasaColors.border),
                           ),
                           child: ListTile(
-                            leading: InitialsAvatar(text: p.name, radius: 20),
-                            title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5)),
-                            subtitle: Text('${p.position} · ${p.teamName} · Age ${p.age}', style: const TextStyle(fontSize: 11.5)),
+                            leading: InitialsAvatar(text: p.name, radius: 20, imageUrl: p.imageUrl),
+                            title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13.5, color: Colors.white)),
+                            subtitle: Text('${p.position} · ${p.teamName} · Age ${p.age}', style: const TextStyle(fontSize: 12, color: NasaColors.textMuted)),
                             trailing: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text(formatMwk(p.marketValueMwk), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11.5, color: NasaColors.pitch)),
+                                Text(formatMwk(p.marketValueMwk), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: NasaColors.gold)),
+                                const SizedBox(height: 2),
                                 Icon(
                                   watchlisted ? Icons.bookmark : Icons.bookmark_outline,
-                                  size: 16,
-                                  color: watchlisted ? NasaColors.sun : NasaColors.slate,
+                                  size: 18,
+                                  color: watchlisted ? NasaColors.gold : NasaColors.textMuted,
                                 ),
                               ],
                             ),

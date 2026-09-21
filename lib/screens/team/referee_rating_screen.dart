@@ -109,8 +109,9 @@ class _ScoreSlider extends StatelessWidget {
                 style:
                     const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
             Text('$value / 5',
-                style: const TextStyle(
-                    fontWeight: FontWeight.w800, color: NasaColors.pitch)),
+                style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    color: Theme.of(context).colorScheme.primary)),
           ],
         ),
         Slider(
@@ -118,7 +119,7 @@ class _ScoreSlider extends StatelessWidget {
           min: 1,
           max: 5,
           divisions: 4,
-          activeColor: NasaColors.pitch,
+          activeColor: Theme.of(context).colorScheme.primary,
           label: '$value',
           onChanged: (v) => onChanged(v.round()),
         ),

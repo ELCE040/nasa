@@ -30,7 +30,7 @@ class LedgerScreen extends StatelessWidget {
               const Text(
                 'Every kwacha raised from registration fees and sponsors, and how it is spent on prizes, balls and equipment — open for the community to see.',
                 style: TextStyle(
-                    color: NasaColors.slate, fontSize: 12.5, height: 1.4),
+                    color: NasaColors.textMuted, fontSize: 12.5, height: 1.4),
               ),
               const SizedBox(height: 16),
               Row(
@@ -39,24 +39,24 @@ class LedgerScreen extends StatelessWidget {
                       child: _Totals(
                           label: 'Total income',
                           value: income,
-                          color: NasaColors.pitch)),
+                          color: NasaColors.green)),
                   const SizedBox(width: 10),
                   Expanded(
                       child: _Totals(
                           label: 'Total spent',
                           value: expense,
-                          color: NasaColors.earth)),
+                          color: NasaColors.crimson)),
                 ],
               ),
               const SizedBox(height: 10),
               _Totals(
                   label: 'Net balance',
                   value: app.totalLedgerBalance,
-                  color: NasaColors.ink,
+                  color: Colors.white,
                   full: true),
               const SizedBox(height: 18),
               const Text('Transaction history',
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: Colors.white)),
               const SizedBox(height: 10),
               ...app.ledger.map((e) {
                 final isIncome = e.type == LedgerType.income;
@@ -64,9 +64,9 @@ class LedgerScreen extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 8),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: NasaColors.bgCard,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: NasaColors.line),
+                    border: Border.all(color: NasaColors.border),
                   ),
                   child: Row(
                     children: [
@@ -75,14 +75,14 @@ class LedgerScreen extends StatelessWidget {
                         height: 34,
                         decoration: BoxDecoration(
                           color:
-                              (isIncome ? NasaColors.pitch : NasaColors.earth)
+                              (isIncome ? NasaColors.green : NasaColors.crimson)
                                   .withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Icon(
                           isIncome ? Icons.arrow_downward : Icons.arrow_upward,
                           size: 17,
-                          color: isIncome ? NasaColors.pitch : NasaColors.earth,
+                          color: isIncome ? NasaColors.green : NasaColors.crimson,
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -92,10 +92,10 @@ class LedgerScreen extends StatelessWidget {
                           children: [
                             Text(e.description,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.w700, fontSize: 13)),
+                                    fontWeight: FontWeight.w700, fontSize: 13, color: Colors.white)),
                             Text('${e.category} · ${formatShortDate(e.date)}',
                                 style: const TextStyle(
-                                    fontSize: 11, color: NasaColors.slate)),
+                                    fontSize: 11.5, color: NasaColors.textMuted)),
                           ],
                         ),
                       ),
@@ -104,7 +104,7 @@ class LedgerScreen extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.w800,
                             color:
-                                isIncome ? NasaColors.pitch : NasaColors.earth,
+                                isIncome ? NasaColors.green : NasaColors.crimson,
                             fontSize: 12.5),
                       ),
                     ],
@@ -136,9 +136,9 @@ class _Totals extends StatelessWidget {
       width: full ? double.infinity : null,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: NasaColors.bgCard,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: NasaColors.line),
+        border: Border.all(color: NasaColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,7 +146,7 @@ class _Totals extends StatelessWidget {
           Text(label,
               style: const TextStyle(
                   fontSize: 11.5,
-                  color: NasaColors.slate,
+                  color: NasaColors.textMuted,
                   fontWeight: FontWeight.w700)),
           const SizedBox(height: 4),
           Text(formatMwk(value),

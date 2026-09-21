@@ -1,148 +1,246 @@
 import 'package:flutter/material.dart';
 
-/// Nasa Sport visual identity.
-///
-/// Red and white keep the prototype energetic, direct, and easy to scan,
-/// with muted ink/slate values for the data-heavy football views.
+/// NAYSA visual identity - Clean, modern dark athletic & scouting theme.
+/// Deep Navy (#0D1623), Card Navy (#131F30), Crimson Red (#C41E3A), Gold (#F5C842).
 class NasaColors {
-  static const pitch = Color(0xFFC8102E); // primary red
-  static const pitchDark = Color(0xFF8F1023);
-  static const sun = Color(0xFFFFCDD5); // soft red accent
-  static const earth = Color(0xFFE53935); // live / alerts
-  static const ink = Color(0xFF12181A); // near-black text
-  static const chalk = Color(0xFFFFF7F8); // white with a red tint
-  static const slate = Color(0xFF5C6B66); // muted secondary text
-  static const line = Color(0xFFF0D4D9); // hairline / divider on chalk
-  static const cardDark = Color(0xFF3A1018);
+  // Brand Identity (User Requested Exact Hex Codes)
+  static const navy = Color(0xFF0D1623); // The Canvas: Deep Navy (#0d1623)
+  static const navyDark = Color(0xFF070C14); // Deepest Background
+  static const navyLight = Color(0xFF1E293B); // Surface Highlight
+  static const crimson = Color(0xFFC41E3A); // Crimson Red (#c41e3a)
+  static const crimsonLight = Color(0xFF3B121A);
+  static const gold = Color(0xFFF5C842); // Athletic Gold (#f5c842)
+  static const goldLight = Color(0xFF2C2411);
+  static const goldAccent = Color(0xFFF5C842);
+  static const blue = Color(0xFF3B82F6); // Electric Blue Accent
+  static const green = Color(0xFF10B981); // Emerald Green
+
+  // Clean Dark Surfaces
+  static const bgLight = Color(0xFF0D1623); // Main Canvas Background (#0d1623)
+  static const bgCard =
+      Color(0xFF131F30); // Slightly Lighter Navy Cards (#131f30)
+  static const bgCardMuted = Color(0xFF1A2638); // Surface Tint
+  static const bgCardHover = Color(0xFF1E2D42);
+  static const bgNav = Color(0xFF0D1623); // Bottom Nav & AppBar
+
+  // High-Contrast Typography
+  static const textDark = Colors.white; // Headings / Pure White
+  static const textMain = Color(0xFFF1F5F9); // Body Text (Crisp Off-White)
+  static const textMuted = Color(0xFF94A3B8); // Secondary / Subtitles
+  static const textLight = Color(0xFF64748B); // Muted notes
+
+  // Clean Borders & Dividers
+  static const border = Color(0xFF1E2D42); // Card & Input Borders
+  static const borderSubtle = Color(0xFF182232);
+
+  // Semantics & Backwards-compatible aliases
+  static const pitch = crimson;
+  static const pitchDark = navy;
+  static const pitchLight = crimsonLight;
+  static const red = crimson;
+  static const redLight = crimsonLight;
+  static const white = Color(0xFFFFFFFF);
+  static const sun = gold;
+  static const earth = crimson;
+  static const ink = textDark;
+  static const chalk = bgLight;
+  static const slate = textMuted;
+  static const line = border;
+  static const cardDark = bgCard;
+  static const cardSurface = bgCard;
+  static const bgDark = bgLight;
+  static const bgNavy = navy;
 }
 
 class NasaTheme {
-  static ThemeData get theme {
-    final base = ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: NasaColors.pitch,
-        primary: NasaColors.pitch,
-        secondary: NasaColors.pitchDark,
-        error: NasaColors.earth,
-        surface: Colors.white,
-      ),
-      scaffoldBackgroundColor: NasaColors.chalk,
-      fontFamily: 'Roboto',
-    );
+  static ThemeData theme({Color? primary, Color? secondary}) {
+    final base = ThemeData.dark(useMaterial3: true);
+    final primaryColor = primary ?? NasaColors.crimson;
+    final secondaryColor = secondary ?? NasaColors.gold;
 
     return base.copyWith(
-      appBarTheme: const AppBarThemeData(
-        backgroundColor: NasaColors.pitch,
+      scaffoldBackgroundColor: NasaColors.bgLight,
+      primaryColor: primaryColor,
+      colorScheme: ColorScheme.dark(
+        primary: primaryColor,
+        onPrimary: Colors.white,
+        secondary: secondaryColor,
+        onSecondary: Colors.black,
+        tertiary: NasaColors.blue,
+        surface: NasaColors.bgCard,
+        onSurface: Colors.white,
+        error: primaryColor,
+        onError: Colors.white,
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: TextStyle(
           color: Colors.white,
-          fontSize: 20,
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.2,
+        ),
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
+      textTheme: base.textTheme.copyWith(
+        headlineLarge: const TextStyle(
+          fontWeight: FontWeight.w900,
+          color: NasaColors.textDark,
+          letterSpacing: -0.5,
+        ),
+        headlineMedium: const TextStyle(
+          fontWeight: FontWeight.w900,
+          color: NasaColors.textDark,
+          letterSpacing: -0.3,
+        ),
+        headlineSmall: const TextStyle(
+          fontWeight: FontWeight.w800,
+          color: NasaColors.textDark,
+          letterSpacing: -0.2,
+        ),
+        titleLarge: const TextStyle(
+          fontWeight: FontWeight.w800,
+          color: NasaColors.textDark,
+          fontSize: 18,
+        ),
+        titleMedium: const TextStyle(
+          fontWeight: FontWeight.w700,
+          color: NasaColors.textDark,
+          fontSize: 15,
+        ),
+        titleSmall: const TextStyle(
+          fontWeight: FontWeight.w700,
+          color: NasaColors.textMain,
+          fontSize: 13,
+        ),
+        bodyLarge: const TextStyle(
+          color: NasaColors.textMain,
+          fontSize: 15,
+          height: 1.4,
+        ),
+        bodyMedium: const TextStyle(
+          color: NasaColors.textMain,
+          fontSize: 13.5,
+          height: 1.4,
+        ),
+        bodySmall: const TextStyle(
+          color: NasaColors.textMuted,
+          fontSize: 12,
+          height: 1.3,
+        ),
+        labelLarge: const TextStyle(
           fontWeight: FontWeight.w800,
           letterSpacing: 0.2,
         ),
       ),
-      textTheme: base.textTheme.copyWith(
-        headlineSmall: const TextStyle(
-          fontWeight: FontWeight.w800,
-          color: NasaColors.ink,
-          letterSpacing: -0.3,
-        ),
-        titleLarge: const TextStyle(
-          fontWeight: FontWeight.w800,
-          color: NasaColors.ink,
-        ),
-        titleMedium: const TextStyle(
-          fontWeight: FontWeight.w700,
-          color: NasaColors.ink,
-        ),
-        bodyMedium: const TextStyle(color: NasaColors.ink, height: 1.35),
-        bodySmall: const TextStyle(color: NasaColors.slate, height: 1.3),
-        labelLarge: const TextStyle(fontWeight: FontWeight.w700),
-      ),
       cardTheme: CardThemeData(
-        color: Colors.white,
+        color: NasaColors.bgCard,
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: const BorderSide(color: NasaColors.line),
+          borderRadius: BorderRadius.circular(14),
+          side: const BorderSide(color: NasaColors.border, width: 1),
         ),
       ),
       chipTheme: base.chipTheme.copyWith(
-        backgroundColor: NasaColors.chalk,
+        backgroundColor: NasaColors.bgCardMuted,
         labelStyle: const TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 12,
-          color: NasaColors.ink,
+          color: NasaColors.textMain,
         ),
-        side: const BorderSide(color: NasaColors.line),
+        side: const BorderSide(color: NasaColors.border),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: NasaColors.pitch,
+          backgroundColor: primaryColor,
           foregroundColor: Colors.white,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(10),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700),
+          textStyle: const TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 14.5,
+            letterSpacing: 0.2,
+          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: NasaColors.pitch,
-          side: const BorderSide(color: NasaColors.pitch),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          foregroundColor: primaryColor,
+          side: BorderSide(color: primaryColor, width: 1.4),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(10),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700),
+          textStyle: const TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: NasaColors.pitch,
-          textStyle: const TextStyle(fontWeight: FontWeight.w700),
+          foregroundColor: primaryColor,
+          textStyle: const TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
       inputDecorationTheme: InputDecorationThemeData(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: NasaColors.bgCard,
+        hintStyle: const TextStyle(color: NasaColors.textLight),
+        labelStyle: const TextStyle(color: NasaColors.textMuted),
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: NasaColors.line),
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: NasaColors.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: NasaColors.line),
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: NasaColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: NasaColors.pitch, width: 1.6),
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: primaryColor, width: 1.6),
         ),
       ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Colors.white,
-        selectedItemColor: NasaColors.pitch,
-        unselectedItemColor: NasaColors.slate,
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: NasaColors.navy,
+        selectedItemColor: primaryColor,
+        unselectedItemColor: NasaColors.textMuted,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
-        elevation: 8,
+        elevation: 0,
       ),
-      dividerTheme: const DividerThemeData(color: NasaColors.line, space: 1),
-      tabBarTheme: const TabBarThemeData(
-        labelColor: NasaColors.pitch,
-        unselectedLabelColor: NasaColors.slate,
-        indicatorColor: NasaColors.pitch,
-        indicatorSize: TabBarIndicatorSize.label,
-        labelStyle: TextStyle(fontWeight: FontWeight.w700),
+      dividerTheme: const DividerThemeData(color: NasaColors.border, space: 1),
+      tabBarTheme: TabBarThemeData(
+        labelColor: Colors.white,
+        unselectedLabelColor: NasaColors.textMuted,
+        indicatorColor: primaryColor,
+        indicatorSize: TabBarIndicatorSize.tab,
+        labelStyle: TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+        unselectedLabelStyle:
+            TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: NasaColors.bgCard,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: NasaColors.border),
+        ),
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w800,
+          fontSize: 18,
+        ),
+        contentTextStyle: const TextStyle(
+          color: NasaColors.textMain,
+          fontSize: 14,
+        ),
       ),
     );
   }

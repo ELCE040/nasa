@@ -47,9 +47,9 @@ class EventsScreen extends StatelessWidget {
               return Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: NasaColors.bgCard,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: NasaColors.line),
+                  border: Border.all(color: NasaColors.border),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,29 +62,30 @@ class EventsScreen extends StatelessWidget {
                             style: const TextStyle(
                                 fontSize: 11.5,
                                 fontWeight: FontWeight.w700,
-                                color: NasaColors.slate)),
+                                color: NasaColors.textMuted)),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(e.title,
                         style: const TextStyle(
-                            fontWeight: FontWeight.w800, fontSize: 15)),
+                            fontWeight: FontWeight.w800, fontSize: 15, color: Colors.white)),
                     const SizedBox(height: 4),
                     Text(e.description,
                         style: const TextStyle(
-                            color: NasaColors.slate,
+                            color: NasaColors.textMuted,
                             fontSize: 12.5,
-                            height: 1.3)),
+                            height: 1.35)),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(Icons.place_outlined,
-                            size: 14, color: NasaColors.slate),
+                        const Icon(Icons.location_on_outlined,
+                            size: 14, color: NasaColors.crimson),
                         const SizedBox(width: 4),
-                        Expanded(
-                            child: Text('${e.venue} · ${e.wardName}',
-                                style: const TextStyle(
-                                    fontSize: 11.5, color: NasaColors.slate))),
+                        Text(e.venue,
+                            style: const TextStyle(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w600,
+                                color: NasaColors.textMuted)),
                       ],
                     ),
                   ],

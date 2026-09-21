@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../state/app_state.dart';
 import '../../widgets/common_widgets.dart';
 import 'scout_discover_tab.dart';
 import 'scout_watchlist_tab.dart';
@@ -33,9 +34,13 @@ class _ScoutHomeScreenState extends State<ScoutHomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_titles[_index]),
-        actions: const [RoleSwitcherButton()],
+        actions: const [AppRefreshButton(), RoleSwitcherButton()],
       ),
-      body: IndexedStack(index: _index, children: _tabs),
+      body: RefreshIndicator(
+        onRefresh: AppState.instance.refreshCurrentData,
+        notificationPredicate: (_) => true,
+        child: IndexedStack(index: _index, children: _tabs),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
         onTap: (i) => setState(() => _index = i),

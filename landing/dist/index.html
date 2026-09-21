@@ -1,0 +1,2866 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NAYSA Sport | Live Football Scores, Fixtures & Standings Malawi</title>
+  <meta name="description" content="Official NAYSA Sport platform. Live football scores, fixtures, standings, top scorers, match results, and grassroots youth football across Malawi." />
+  <meta name="keywords" content="NAYSA Sport, Malawi football, live scores, fixtures, standings, league table, youth football, Blantyre, grassroots soccer" />
+  <link rel="canonical" href="https://naysasport.com/" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://naysasport.com/" />
+  <meta property="og:title" content="NAYSA Sport | Live Football Scores, Fixtures & Standings" />
+  <meta property="og:description" content="Follow live football scores, fixtures, standings, and youth talent across Malawi." />
+  <meta property="og:image" content="https://naysasport.com/logo.png" />
+  <meta property="og:site_name" content="NAYSA Sport" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="NAYSA Sport | Live Football Scores & Standings" />
+  <meta name="twitter:description" content="Live scores, fixtures, and league tables for Malawi football." />
+  <meta name="twitter:image" content="https://naysasport.com/logo.png" />
+
+  <!-- Structured Data / JSON-LD for Google Rich Results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SportsOrganization",
+    "name": "NAYSA Sport",
+    "url": "https://naysasport.com",
+    "logo": "https://naysasport.com/logo.png",
+    "sport": "Soccer",
+    "description": "Malawi grassroots and youth football league platform with live scores, fixtures, standings, and talent scouting.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Blantyre",
+      "addressCountry": "MW"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json" id="schema-sports-events">
+  {
+    "@context": "https://schema.org",
+    "@type": "SportsEvent",
+    "name": "NAYSA League Matchday Fixtures",
+    "startDate": "2026-09-20T14:30:00+02:00",
+    "sport": "Soccer",
+    "location": {
+      "@type": "Place",
+      "name": "Chilomoni Stadium",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Blantyre",
+        "addressCountry": "MW"
+      }
+    },
+    "organizer": {
+      "@type": "SportsOrganization",
+      "name": "NAYSA Sport",
+      "url": "https://naysasport.com"
+    },
+    "homeTeam": {
+      "@type": "SportsTeam",
+      "name": "Chilomoni FC"
+    },
+    "awayTeam": {
+      "@type": "SportsTeam",
+      "name": "Bangwe All Stars"
+    }
+  }
+  </script>
+
+  <!-- Google Fonts: Barlow, Barlow Condensed for exact typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&family=Barlow:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet" />
+
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* ─── RESET & CSS VARIABLES ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-dark: #070d18;
+      --bg-navy: #0b1424;
+      --bg-card: #122038;
+      --bg-card-hover: #182c4c;
+      --bg-nav: #091222;
+      --gold: #f5c518;
+      --gold-hover: #e5b610;
+      --red: #e63946;
+      --red-dark: #c62828;
+      --green: #2e7d32;
+      --green-light: #388e3c;
+      --white: #ffffff;
+      --text-main: #cdd9e5;
+      --text-muted: #7d8b9b;
+      --font-body: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-condensed: 'Barlow Condensed', sans-serif;
+      --font-display: 'Barlow Condensed', sans-serif;
+      --radius: 12px;
+      --transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; overflow-x: hidden; }
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-dark);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+      max-width: 100vw;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; height: auto; display: block; }
+    button { font-family: inherit; }
+    /* Prevent any fixed-width element from causing horizontal scroll */
+    .hero-container, .scores-section, .features-section,
+    .news-section, .player-visibility-section,
+    .community-cta-section, .site-footer {
+      box-sizing: border-box;
+      max-width: 100%;
+    }
+
+    /* ─── DYNAMIC SCROLL PROGRESS BAR ─── */
+    #scroll-progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--red));
+      width: 0%;
+      z-index: 1000;
+      transition: width 0.1s ease-out;
+    }
+
+    /* ─── TICKER BAR ─── */
+    .ticker-bar {
+      background: var(--red-dark);
+      padding: 6px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      z-index: 100;
+    }
+    .ticker-track {
+      display: inline-flex;
+      width: max-content;
+      animation: ticker-scroll 45s linear infinite;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 28px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .ticker-badge {
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .ticker-badge.ft { background: #162a45; color: #a4c2e6; }
+    .ticker-badge.live { background: var(--green); color: #fff; }
+    .ticker-score { color: var(--gold); font-weight: 800; font-size: 14px; }
+    @keyframes ticker-scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ─── NAVBAR ─── */
+    .navbar {
+      background: var(--bg-nav);
+      display: flex;
+      align-items: center;
+      padding: 0 48px;
+      height: 70px;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    .navbar.scrolled {
+      background: rgba(9, 18, 34, 0.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-right: 40px;
+      flex-shrink: 0;
+    }
+    .nav-logo-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      object-fit: cover;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+      transition: transform 0.3s ease;
+    }
+    .nav-brand:hover .nav-logo-badge {
+      transform: scale(1.05) rotate(-2deg);
+    }
+    .nav-brand-title strong {
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 0.4px;
+      display: block;
+      line-height: 1.1;
+    }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 6px 0;
+      position: relative;
+      transition: var(--transition);
+    }
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--white);
+    }
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--gold);
+      border-radius: 2px;
+      animation: tab-bar-in 0.3s ease-out;
+    }
+    @keyframes tab-bar-in {
+      0% { transform: scaleX(0); }
+      100% { transform: scaleX(1); }
+    }
+    .nav-spacer { flex: 1; }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-nav-login {
+      padding: 8px 18px;
+      border: 1.5px solid rgba(255, 255, 255, 0.22);
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--white);
+      background: transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: var(--transition);
+    }
+    .btn-nav-login:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.45);
+      transform: translateY(-1px);
+    }
+    .btn-nav-register {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: var(--red);
+      color: var(--white);
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: var(--transition);
+    }
+    .btn-nav-register:hover {
+      background: var(--red-dark);
+      box-shadow: 0 4px 16px rgba(230, 57, 70, 0.4);
+      transform: translateY(-1px);
+    }
+    .nav-hamburger {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--white);
+      cursor: pointer;
+      padding: 6px;
+    }
+    .navbar-sub-strip {
+      height: 3px;
+      display: flex;
+      width: 100%;
+    }
+    .navbar-sub-strip .bar-gold { width: 40%; background: var(--gold); }
+    .navbar-sub-strip .bar-red { width: 35%; background: var(--red); }
+    .navbar-sub-strip .bar-white { width: 25%; background: rgba(255,255,255,0.7); }
+
+    /* Mobile menu drawer */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 100px;
+      left: 0;
+      right: 0;
+      background: var(--bg-nav);
+      padding: 24px;
+      border-bottom: 2px solid var(--red);
+      z-index: 89;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .mobile-menu.open { display: flex; animation: slide-down 0.3s ease-out; }
+    @keyframes slide-down {
+      0% { opacity: 0; transform: translateY(-10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .mobile-menu a {
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--white);
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .mobile-menu-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    /* ─── SCROLL REVEAL ANIMATIONS ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-40px);
+      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    .reveal-left.is-visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(40px);
+      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    .reveal-right.is-visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .reveal-scale {
+      opacity: 0;
+      transform: scale(0.92);
+      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    .reveal-scale.is-visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Stagger Delays */
+    .stagger-1 { transition-delay: 0.08s; }
+    .stagger-2 { transition-delay: 0.16s; }
+    .stagger-3 { transition-delay: 0.24s; }
+    .stagger-4 { transition-delay: 0.32s; }
+    .stagger-5 { transition-delay: 0.40s; }
+    .stagger-6 { transition-delay: 0.48s; }
+
+    /* ─── HERO SECTION ─── */
+    .hero {
+      position: relative;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+      padding: 70px clamp(18px, 6vw, 80px) 80px;
+      background: radial-gradient(circle at 18% 45%, #182e4e 0%, #0c182a 45%, var(--bg-dark) 85%);
+      overflow: hidden;
+    }
+
+    /* Moving Watermark Background from Left to Right */
+    .hero-watermark-container {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      width: 100%;
+      transform: translateY(-50%);
+      overflow: hidden;
+      clip: rect(0, 100vw, 1000px, 0);
+      pointer-events: none;
+      user-select: none;
+      z-index: 1;
+    }
+    .hero-watermark-track {
+      display: flex;
+      width: max-content;
+      animation: watermark-drift-ltr 30s linear infinite;
+    }
+    .hero-watermark-text {
+      font-family: var(--font-display);
+      font-size: clamp(140px, 22vw, 300px);
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.032);
+      letter-spacing: 24px;
+      padding-right: 140px;
+      line-height: 0.9;
+      white-space: nowrap;
+    }
+    @keyframes watermark-drift-ltr {
+      0% { transform: translateX(-50%); }
+      100% { transform: translateX(0%); }
+    }
+
+    .hero-container {
+      position: relative;
+      z-index: 2;
+      max-width: 820px;
+    }
+    
+    /* Hero Flex: Crest Logo on the LEFT, Headline on the RIGHT */
+    .hero-flex-layout {
+      display: flex;
+      align-items: flex-start;
+      gap: 28px;
+      margin-bottom: 22px;
+    }
+    .hero-crest-badge {
+      width: 110px;
+      height: 110px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 28px rgba(30, 110, 240, 0.5));
+      margin-top: 4px;
+      animation: subtle-crest-float 4s ease-in-out infinite;
+    }
+    @keyframes subtle-crest-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    /* Big Headline: THE PITCH / IS FOR / EVERYONE. */
+    .hero-title-box {
+      display: flex;
+      flex-direction: column;
+    }
+    .hero-title {
+      font-family: var(--font-condensed);
+      font-size: clamp(48px, 6.6vw, 84px);
+      font-weight: 600;
+      line-height: 0.94;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .hero-title .pitch {
+      color: var(--white);
+      display: block;
+      font-weight: 600;
+    }
+    .hero-title .is-for {
+      color: var(--gold);
+      display: block;
+      font-weight: 600;
+    }
+    .hero-title .everyone {
+      display: block;
+      font-weight: 600;
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--red);
+      letter-spacing: 1px;
+    }
+
+    .hero-red-line {
+      width: 48px;
+      height: 3px;
+      background: var(--red);
+      margin-bottom: 22px;
+      border-radius: 2px;
+    }
+
+    .hero-description {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-main);
+      max-width: 480px;
+      margin-bottom: 36px;
+    }
+    .hero-description .highlight-gold {
+      color: var(--gold);
+      font-weight: 600;
+    }
+    .hero-description .highlight-white {
+      color: var(--white);
+      font-weight: 500;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    /* Button with Shimmer shine effect */
+    .btn-hero-apk {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 26px;
+      background: var(--gold);
+      color: #08111e;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(245, 197, 24, 0.25);
+      transition: var(--transition);
+    }
+    .btn-hero-apk::after,
+    .btn-download-gold::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transform: rotate(25deg);
+      animation: button-shimmer 4s infinite;
+    }
+    @keyframes button-shimmer {
+      0%, 70% { left: -60%; }
+      100% { left: 140%; }
+    }
+    .btn-hero-apk:hover {
+      background: var(--gold-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(245, 197, 24, 0.4);
+    }
+    .btn-hero-register {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 26px;
+      background: rgba(18, 32, 56, 0.6);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-hero-register:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.55);
+      transform: translateY(-2px);
+    }
+
+    /* ─── SCORES, FIXTURES & TABLE SECTION ─── */
+    .scores-section {
+      padding: 60px 80px;
+      background: var(--bg-dark);
+    }
+    .tab-navigation {
+      display: flex;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 28px;
+      gap: 4px;
+    }
+    .tab-trigger {
+      padding: 12px 24px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+    .tab-trigger i { width: 16px; height: 16px; }
+    .tab-trigger.active {
+      color: var(--gold);
+      border-color: var(--gold);
+    }
+    .tab-trigger:hover:not(.active) {
+      color: var(--white);
+    }
+
+    .tab-content-panel { display: none; }
+    .tab-content-panel.active { display: block; animation: panel-fade 0.35s ease-out; }
+    @keyframes panel-fade {
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Match Score Rows */
+    .match-rows-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .match-card-row {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 18px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: var(--transition);
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      position: relative;
+      overflow: hidden;
+    }
+    .match-card-row::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: transparent;
+      transition: var(--transition);
+    }
+    .match-card-row:hover {
+      background: var(--bg-card-hover);
+      transform: translateX(4px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .match-card-row:hover::before {
+      background: var(--gold);
+    }
+    .match-team-left {
+      font-size: 15px;
+      font-weight: 700;
+      flex: 1;
+      text-align: right;
+      padding-right: 20px;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .match-score-center {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      justify-content: center;
+      min-width: 140px;
+    }
+    .match-badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .match-badge.ft { background: #162a45; color: #a4c2e6; }
+    .match-badge.live {
+      background: var(--red);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 0 12px rgba(230, 57, 70, 0.5);
+    }
+    .match-badge.live::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #fff;
+      border-radius: 50%;
+      animation: pulse-dot 1.2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.75); }
+    }
+    .match-digits {
+      font-family: var(--font-condensed);
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .match-sep { color: var(--text-muted); font-size: 20px; font-weight: 300; }
+    .match-team-right {
+      font-size: 15px;
+      font-weight: 700;
+      flex: 1;
+      text-align: left;
+      padding-left: 20px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    /* Fixtures List */
+    .fixtures-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .fixture-item-row {
+      background: var(--bg-card);
+      border-radius: 10px;
+      padding: 16px 28px;
+      display: grid;
+      grid-template-columns: 140px 1fr 180px;
+      align-items: center;
+      gap: 16px;
+      transition: var(--transition);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    .fixture-item-row:hover {
+      background: var(--bg-card-hover);
+      transform: translateX(4px);
+    }
+    .fixture-kickoff { color: var(--text-muted); font-size: 13px; font-weight: 600; }
+    .fixture-teams-matchup { font-size: 15px; font-weight: 700; }
+    .fixture-vs-span { color: var(--gold); margin: 0 10px; font-weight: 800; font-size: 12px; }
+    .fixture-location { font-size: 13px; color: var(--text-muted); text-align: right; }
+    .fixture-item-row { cursor: pointer; }
+    .fixture-club, .score-club { display: inline-flex; align-items: center; gap: 9px; min-width: 0; }
+    .score-club { width: 100%; }
+    .match-team-left .score-club { justify-content: flex-end; }
+    .match-team-right .score-club { justify-content: flex-start; }
+    .fixture-club { font-size: 15px; font-weight: 700; }
+    .team-crest-image, .team-crest-fallback { width: 30px; height: 30px; flex: 0 0 30px; border-radius: 50%; object-fit: contain; background: #fff; border: 1px solid rgba(245,197,24,.42); }
+    .team-crest-fallback { display: inline-flex; align-items: center; justify-content: center; color: var(--red); font-size: 12px; font-weight: 900; }
+    .fixture-club-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .match-detail-overlay { position:fixed; inset:0; z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(3,10,22,.78); backdrop-filter:blur(6px); }
+    .match-detail-overlay.open { display:flex; }
+    .match-detail-dialog { width:min(620px,100%); max-height:min(720px,90vh); overflow:auto; background:var(--bg-card); border:1px solid rgba(245,197,24,.38); border-radius:16px; padding:24px; box-shadow:0 22px 70px rgba(0,0,0,.5); position:relative; }
+    .match-detail-close { position:absolute; top:12px; right:14px; border:0; background:transparent; color:var(--text-muted); font-size:28px; cursor:pointer; }
+    .match-detail-score { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:14px; margin:22px 0 16px; text-align:center; }
+    .match-detail-team { display:flex; flex-direction:column; align-items:center; gap:8px; min-width:0; font-weight:800; }
+    .match-detail-team .team-crest-image, .match-detail-team .team-crest-fallback { width:54px; height:54px; flex-basis:54px; font-size:18px; }
+    .match-detail-score-value { color:var(--gold); font-family:var(--font-condensed); font-size:36px; font-weight:900; white-space:nowrap; }
+    .match-detail-meta { color:var(--text-muted); text-align:center; font-size:13px; line-height:1.7; }
+    .match-event-list { margin:20px 0 0; padding:0; list-style:none; border-top:1px solid rgba(255,255,255,.08); }
+    .match-event-list li { display:flex; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.06); font-size:13px; }
+    .match-event-minute { color:var(--gold); font-weight:900; min-width:36px; }
+    .match-event-icon { width:24px; text-align:center; flex:0 0 24px; font-size:16px; }
+    .match-event-icon.own-goal { color:var(--red); }
+    .shootout-result { margin:14px auto 0; width:max-content; max-width:100%; padding:7px 13px; border-radius:8px; border:1px solid rgba(245,197,24,.5); color:var(--gold); font-size:13px; font-weight:900; }
+
+    /* League Table */
+    .table-container-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .league-standings-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      min-width: 600px;
+    }
+    .league-standings-table thead tr { background: #15253e; }
+    .league-standings-table th {
+      padding: 13px 18px;
+      color: var(--text-muted);
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .league-standings-table th:nth-child(2) { text-align: left; }
+    .league-standings-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .league-standings-table td:nth-child(2) { text-align: left; font-weight: 700; }
+    .league-standings-table tbody tr:hover td { background: rgba(255, 255, 255, 0.04); }
+    .td-pos { color: var(--text-muted); font-weight: 800; }
+    .td-pts { font-weight: 900; color: var(--gold); font-size: 15px; }
+    .standings-group-row td { background:rgba(245,197,24,.09); color:var(--gold); font-weight:900; letter-spacing:.6px; text-transform:uppercase; text-align:left !important; }
+    .league-filter-pills {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .league-pill {
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      background: var(--bg-card);
+      color: var(--text-muted);
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: var(--transition);
+    }
+    .league-pill.active {
+      background: transparent;
+      border-color: var(--gold);
+      color: var(--gold);
+      box-shadow: 0 0 10px rgba(245, 197, 24, 0.2);
+    }
+
+    /* ─── LEAGUE GROUPING & SORTING STYLES ─── */
+    .league-match-group {
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .league-match-group:last-child {
+      margin-bottom: 0;
+    }
+    .league-group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: linear-gradient(90deg, #13223b 0%, #0b1627 100%);
+      border-left: 4px solid var(--gold);
+      border-radius: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+    .league-group-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .league-group-title .league-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(245, 197, 24, 0.15);
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+    .league-group-title .league-icon svg,
+    .league-group-title .league-icon i {
+      width: 15px;
+      height: 15px;
+    }
+    .league-group-title .league-name {
+      font-family: var(--font-condensed);
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--white);
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .league-match-count {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 9px;
+      border-radius: 12px;
+      white-space: nowrap;
+    }
+    .league-live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      background: rgba(230, 57, 70, 0.16);
+      border: 1px solid rgba(230, 57, 70, 0.45);
+      border-radius: 12px;
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .league-live-indicator .live-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: pulse-dot 1.2s infinite;
+    }
+    .league-match-list,
+    .league-fixture-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .ticker-league {
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      background: rgba(0, 0, 0, 0.28);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    @media (max-width: 580px) {
+      .league-group-header {
+        padding: 10px 14px;
+      }
+      .league-group-title .league-name {
+        font-size: 15px;
+      }
+      .league-match-count {
+        display: none;
+      }
+    }
+
+    /* ─── WHAT WE OFFER (FEATURES GRID) ─── */
+    .features-section {
+      padding: 90px 80px;
+      background: var(--bg-navy);
+      text-align: center;
+    }
+    .section-eyebrow-center {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 12px;
+    }
+    .section-title-center {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 54px;
+      line-height: 1.15;
+    }
+    .section-title-center .gold { color: var(--gold); }
+    
+    /* 3-col on desktop, 2-col on tablet AND 2-col on mobile as requested */
+    .features-grid-layout {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      text-align: left;
+    }
+    .feature-card-item {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 34px 28px;
+      transition: var(--transition);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      position: relative;
+    }
+    .feature-card-item:hover {
+      transform: translateY(-6px);
+      background: var(--bg-card-hover);
+      border-color: rgba(245, 197, 24, 0.2);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+    }
+    .feature-card-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(230, 57, 70, 0.12);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
+      color: var(--red);
+      transition: transform 0.3s ease;
+    }
+    .feature-card-item:hover .feature-card-icon {
+      transform: scale(1.1) rotate(4deg);
+      background: rgba(230, 57, 70, 0.2);
+    }
+    .feature-card-icon i { width: 22px; height: 22px; }
+    .feature-card-item h3 {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: var(--white);
+    }
+    .feature-card-item p {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--text-main);
+    }
+
+    /* ─── FOOTBALL NEWS SECTION ─── */
+    .news-section {
+      padding: 90px 80px;
+      background: var(--bg-dark);
+    }
+    .news-header-flex {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+    .news-heading-left .eyebrow {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 8px;
+    }
+    .news-heading-left h2 {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .news-heading-left h2 span { color: var(--gold); }
+    .news-view-all-link {
+      color: var(--gold);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+    .news-view-all-link:hover {
+      text-decoration: underline;
+      transform: translateX(4px);
+    }
+    .news-view-all-link i { width: 14px; height: 14px; }
+    .news-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .news-story-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    .news-story-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .news-media-wrap {
+      height: 210px;
+      overflow: hidden;
+      background: #15253e;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .news-media-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .news-story-card:hover .news-media-wrap img {
+      transform: scale(1.08);
+    }
+    .news-placeholder-icon {
+      color: rgba(255, 255, 255, 0.1);
+    }
+    .news-placeholder-icon i { width: 64px; height: 64px; }
+    .news-content-box { padding: 22px; }
+    .news-tag-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .news-badge-category {
+      font-size: 10.5px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 4px;
+      background: var(--red);
+      color: #fff;
+    }
+    .news-published-date { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .news-story-card h3 {
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.4;
+      margin-bottom: 10px;
+      color: var(--white);
+    }
+    .news-story-card p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-main);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ─── PLAYER VISIBILITY SECTION ─── */
+    .player-visibility-section {
+      padding: 90px 80px;
+      background: var(--bg-navy);
+      display: flex;
+      align-items: center;
+      gap: 80px;
+    }
+    .player-vis-copy { flex: 1; min-width: 0; }
+    .player-vis-copy .eyebrow {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 18px;
+    }
+    .player-vis-copy h2 {
+      font-family: var(--font-display);
+      font-size: clamp(34px, 4.5vw, 56px);
+      font-weight: 900;
+      line-height: 1.0;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .player-vis-copy h2 .gold { color: var(--gold); }
+    .player-vis-copy p {
+      font-size: 14.5px;
+      line-height: 1.75;
+      color: var(--text-main);
+      max-width: 440px;
+      margin-bottom: 40px;
+    }
+    .player-stats-counter-row {
+      display: flex;
+      gap: 40px;
+    }
+    .player-stat-col strong {
+      font-family: var(--font-condensed);
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--gold);
+      display: block;
+      line-height: 1;
+    }
+    .player-stat-col small {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+      display: block;
+    }
+    .player-vis-showcase {
+      flex: 1;
+      position: relative;
+      min-height: 360px;
+    }
+    .player-photo-frame {
+      border-radius: 18px;
+      overflow: hidden;
+      border: 2.5px solid var(--red);
+      height: 360px;
+      position: relative;
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+      transition: transform 0.4s ease;
+    }
+    .player-photo-frame:hover {
+      transform: scale(1.02);
+    }
+    .player-photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .player-fallback-avatar { color: rgba(255, 255, 255, 0.08); }
+    .player-fallback-avatar i { width: 100px; height: 100px; }
+
+    /* Player of the Month Badge with subtle floating animation */
+    .potm-gold-overlay {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: var(--gold);
+      color: #091222;
+      padding: 12px 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 26px rgba(245, 197, 24, 0.45);
+      max-width: calc(100% - 40px);
+      z-index: 5;
+      animation: potm-subtle-glow 3s ease-in-out infinite;
+    }
+    @keyframes potm-subtle-glow {
+      0%, 100% { box-shadow: 0 8px 26px rgba(245, 197, 24, 0.45); }
+      50% { box-shadow: 0 10px 32px rgba(245, 197, 24, 0.7); }
+    }
+    .potm-gold-overlay i { width: 22px; height: 22px; flex-shrink: 0; }
+    .potm-text-details strong {
+      font-size: 10.5px;
+      font-weight: 900;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      display: block;
+      line-height: 1.1;
+    }
+    .potm-text-details span {
+      font-size: 14.5px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+    .potm-goals-pill {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 900;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 3px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* ─── DOWNLOAD THE NAYSA APP (RED SECTION) ─── */
+    .download-cta-section {
+      background: var(--red);
+      padding: 90px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .download-icon-circle {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 28px;
+      color: var(--gold);
+      background: rgba(0, 0, 0, 0.08);
+      animation: subtle-pulse 3s infinite;
+    }
+    @keyframes subtle-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    .download-icon-circle i { width: 34px; height: 34px; }
+    .download-cta-section h2 {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 4.8vw, 48px);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+    .download-cta-section p.dl-lead {
+      font-size: 15.5px;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 480px;
+      margin: 0 auto 34px;
+      line-height: 1.6;
+    }
+    .btn-download-gold {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 42px;
+      background: var(--gold);
+      color: #0b1424;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      transition: var(--transition);
+    }
+    .btn-download-gold:hover {
+      background: var(--gold-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+    .btn-download-gold i { width: 20px; height: 20px; }
+    .download-meta-sub {
+      font-size: 12.5px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 16px;
+      font-weight: 500;
+    }
+    .download-features-row {
+      display: flex;
+      justify-content: center;
+      gap: 64px;
+      margin-top: 56px;
+      flex-wrap: wrap;
+    }
+    .dl-feature-col {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.95);
+      transition: transform 0.3s ease;
+    }
+    .dl-feature-col:hover {
+      transform: translateY(-3px);
+    }
+    .dl-feature-col i {
+      width: 28px;
+      height: 28px;
+      margin: 0 auto 12px;
+      display: block;
+      color: var(--white);
+    }
+    .dl-feature-col strong {
+      display: block;
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .dl-feature-col span {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* ─── JOIN COMMUNITY CTA CARD ─── */
+    .community-cta-section {
+      background: var(--bg-dark);
+      padding: 90px 80px;
+    }
+    .community-card-box {
+      background: var(--bg-navy);
+      border-radius: 24px;
+      padding: 68px 52px;
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+    }
+    .community-card-box:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+    }
+    .community-logo-crest {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 26px;
+      filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.4));
+    }
+    .community-card-box h2 {
+      font-family: var(--font-display);
+      font-size: clamp(26px, 3.8vw, 38px);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 18px;
+    }
+    .community-card-box h2 span { color: var(--gold); }
+    .community-card-box p {
+      font-size: 14.5px;
+      line-height: 1.7;
+      color: var(--text-main);
+      max-width: 460px;
+      margin: 0 auto 38px;
+    }
+    .community-btn-group {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-comm-register {
+      padding: 13px 28px;
+      background: var(--red);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-comm-register:hover {
+      background: var(--red-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(230, 57, 70, 0.4);
+    }
+    .btn-comm-register i { width: 16px; height: 16px; }
+    .btn-comm-login {
+      padding: 13px 28px;
+      background: transparent;
+      color: var(--gold);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1.5px solid var(--gold);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-comm-login:hover {
+      background: rgba(245, 197, 24, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(245, 197, 24, 0.2);
+    }
+    .btn-comm-login i { width: 16px; height: 16px; }
+
+    /* ─── MULTI-COLUMN FOOTER ─── */
+    .site-footer {
+      background: var(--bg-nav);
+      padding: 60px 80px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .footer-columns-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 52px;
+      padding-bottom: 52px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .footer-brand-side {
+      display: flex;
+      flex-direction: column;
+    }
+    .footer-brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .footer-brand-badge img {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+    .footer-brand-badge strong {
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--gold);
+      display: block;
+      line-height: 1.1;
+    }
+    .footer-about-text {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--text-main);
+      margin-bottom: 18px;
+      max-width: 320px;
+    }
+    .footer-location-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .footer-location-indicator i { width: 15px; height: 15px; color: var(--red); flex-shrink: 0; }
+    .footer-menu-col h4 {
+      font-size: 12.5px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 22px;
+    }
+    .footer-menu-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .footer-menu-col ul li a {
+      font-size: 13.5px;
+      color: var(--text-main);
+      transition: var(--transition);
+    }
+    .footer-menu-col ul li a:hover {
+      color: var(--white);
+      padding-left: 4px;
+    }
+    .footer-legal-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 0;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .footer-legal-links {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-legal-links a {
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .footer-legal-links a:hover { color: var(--white); }
+
+    /* ─── SKELETON / LOADING UTILITY ─── */
+    .skeleton-loader {
+      background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .empty-state-notice {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* ─── FULL SITE RESPONSIVE STYLES ─── */
+    @media (max-width: 1200px) {
+      .hero, .scores-section, .features-section, .news-section, .player-visibility-section, .community-cta-section, .site-footer {
+        padding-left: 48px;
+        padding-right: 48px;
+      }
+      .news-cards-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 900px) {
+      .hero, .scores-section, .features-section, .news-section, .player-visibility-section, .community-cta-section, .site-footer {
+        padding-left: 28px;
+        padding-right: 28px;
+      }
+      .navbar { padding: 0 24px; }
+      .nav-links, .nav-actions { display: none; }
+      .nav-hamburger { display: block; }
+      
+      .hero {
+        padding: 56px 24px;
+        min-height: auto;
+      }
+      .hero-flex-layout {
+        gap: 20px;
+      }
+      .hero-crest-badge {
+        width: 80px;
+        height: 80px;
+      }
+      .hero-title { font-size: 52px; }
+
+      .features-grid-layout {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+
+      .player-visibility-section {
+        flex-direction: column;
+        gap: 48px;
+      }
+      .player-vis-showcase {
+        width: 100%;
+        max-width: 500px;
+      }
+
+      .footer-columns-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+      }
+    }
+
+    /* Mobile view: Features section in 2-column grid as requested */
+    @media (max-width: 650px) {
+      .hero, .scores-section, .features-section, .news-section, .player-visibility-section, .community-cta-section, .site-footer {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+      .hero-flex-layout {
+        gap: 16px;
+      }
+      .hero-crest-badge {
+        width: 64px;
+        height: 64px;
+      }
+      .hero-title { font-size: 38px; }
+      
+      /* Features Section: 2-column grid on mobile */
+      .features-section { padding-left: 14px; padding-right: 14px; }
+      .features-grid-layout {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .feature-card-item {
+        padding: 22px 16px;
+      }
+      .feature-card-icon {
+        width: 38px;
+        height: 38px;
+        margin-bottom: 14px;
+      }
+      .feature-card-icon i { width: 18px; height: 18px; }
+      .feature-card-item h3 {
+        font-size: 14.5px;
+        margin-bottom: 6px;
+      }
+      .feature-card-item p {
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .news-cards-grid { grid-template-columns: 1fr; }
+
+      .match-card-row {
+        padding: 14px 16px;
+      }
+      .match-team-left, .match-team-right {
+        font-size: 13.5px;
+        padding: 0 8px;
+      }
+      .match-score-center { min-width: 104px; gap: 7px; }
+      .score-club { gap: 6px; }
+      .team-crest-image, .team-crest-fallback { width: 27px; height: 27px; flex-basis: 27px; }
+      .match-digits { font-size: 26px; }
+      .match-badge { font-size: 10px; padding: 3px 6px; }
+
+      .fixture-item-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        text-align: left;
+      }
+      .fixture-location { text-align: left; }
+      .table-container-wrap { overflow-x: hidden; }
+      .league-standings-table { min-width: 0; font-size: 11px; table-layout: fixed; }
+      .league-standings-table th, .league-standings-table td { padding: 10px 4px; }
+      .league-standings-table th:nth-child(2), .league-standings-table td:nth-child(2) { width: 31%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+      .download-features-row {
+        gap: 32px;
+      }
+      .community-card-box {
+        padding: 40px 20px;
+      }
+      .footer-legal-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Dynamic Scroll Progress -->
+<div id="scroll-progress-bar"></div>
+
+<!-- ═══════════════════════════════════════
+     1. TICKER BAR
+═══════════════════════════════════════ -->
+<div class="ticker-bar">
+  <div class="ticker-track" id="ticker-track">
+    <div class="ticker-item"><span class="ticker-badge ft">FT</span> Loading live scores&hellip;</div>
+    <div class="ticker-item"><span class="ticker-badge ft">FT</span> Loading live scores&hellip;</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     2. NAVBAR
+═══════════════════════════════════════ -->
+<nav class="navbar" id="main-nav">
+  <a href="#top" class="nav-brand">
+    <img src="/logo.png" alt="NAYSA" class="nav-logo-badge" onerror="this.style.display='none'" />
+    <div class="nav-brand-title">
+      <strong>NAYSA Sport</strong>
+    </div>
+  </a>
+
+  <div class="nav-links">
+    <a href="#scores" class="active" data-nav="scores">Scores</a>
+    <a href="#fixtures" data-nav="fixtures">Fixtures</a>
+    <a href="#table" data-nav="table">Table</a>
+    <a href="#news" data-nav="news">News</a>
+    <a href="#players" data-nav="players">Players</a>
+  </div>
+
+  <div class="nav-spacer"></div>
+
+  <div class="nav-actions">
+    <button class="btn-nav-login" onclick="location='/portal/'">
+      <i data-lucide="circle-user-round"></i> Login
+    </button>
+    <button class="btn-nav-register" onclick="location='/portal/'">
+      <i data-lucide="shield"></i> Register Team
+    </button>
+  </div>
+
+  <button class="nav-hamburger" id="nav-toggle" aria-label="Toggle Navigation">
+    <i data-lucide="menu"></i>
+  </button>
+</nav>
+
+<!-- Mobile Drawer Menu -->
+<div class="mobile-menu" id="mobile-drawer">
+  <a href="#scores" onclick="closeMobileMenu()">Scores</a>
+  <a href="#fixtures" onclick="closeMobileMenu()">Fixtures</a>
+  <a href="#table" onclick="closeMobileMenu()">Table</a>
+  <a href="#news" onclick="closeMobileMenu()">News</a>
+  <a href="#players" onclick="closeMobileMenu()">Players</a>
+  <div class="mobile-menu-actions">
+    <button class="btn-nav-login" style="justify-content:center" onclick="location='/portal/'">
+      <i data-lucide="circle-user-round"></i> Login
+    </button>
+    <button class="btn-nav-register" style="justify-content:center" onclick="location='/portal/'">
+      <i data-lucide="shield"></i> Register Team
+    </button>
+  </div>
+</div>
+
+<div class="navbar-sub-strip">
+  <div class="bar-gold"></div>
+  <div class="bar-red"></div>
+  <div class="bar-white"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     3. HERO SECTION
+═══════════════════════════════════════ -->
+<section class="hero" id="top">
+  <!-- Smoothly Moving Watermark from Left to Right -->
+  <div class="hero-watermark-container">
+    <div class="hero-watermark-track">
+      <span class="hero-watermark-text">NAYSA</span>
+      <span class="hero-watermark-text">NAYSA</span>
+      <span class="hero-watermark-text">NAYSA</span>
+      <span class="hero-watermark-text">NAYSA</span>
+    </div>
+  </div>
+
+  <div class="hero-container">
+    <!-- Crest Logo on the LEFT of the words -->
+    <div class="hero-flex-layout reveal reveal-left">
+      <img src="/logo.png" alt="NAYSA Crest" class="hero-crest-badge" onerror="this.style.display='none'" />
+      
+      <div class="hero-title-box">
+        <h1 class="hero-title">
+          <span class="pitch">THE PITCH</span>
+          <span class="is-for">IS FOR</span>
+          <span class="everyone">EVERYONE.</span>
+        </h1>
+      </div>
+    </div>
+
+    <div class="hero-red-line reveal stagger-1"></div>
+
+    <p class="hero-description reveal stagger-2">
+      Malawi's <span class="highlight-white">grassroots football platform</span> &mdash; live scores, fixtures,
+      league tables, and local news. A place where <span class="highlight-white">players get seen</span> and
+      <span class="highlight-gold">teams get organised.</span>
+    </p>
+
+    <div class="hero-cta-group reveal stagger-3">
+      <a class="btn-hero-apk" href="/downloads/naysa-sport.apk" download>
+        <i data-lucide="download"></i> DOWNLOAD APK
+      </a>
+      <a class="btn-hero-register" href="/portal/">
+        <i data-lucide="shield"></i> REGISTER TEAM
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="match-detail-overlay" id="match-detail-overlay" role="dialog" aria-modal="true" onclick="if(event.target===this) closeMatchDetails()"><article class="match-detail-dialog"><button class="match-detail-close" type="button" aria-label="Close match details" onclick="closeMatchDetails()">×</button><div id="match-detail-content"></div></article></div>
+
+<!-- ═══════════════════════════════════════
+     4. SCORES / FIXTURES / TABLE TABS
+═══════════════════════════════════════ -->
+<section class="scores-section" id="scores">
+  <div class="tab-navigation reveal">
+    <button class="tab-trigger active" onclick="handleTabSwitch('live', this)">
+      <i data-lucide="zap"></i> Live Scores
+    </button>
+    <button class="tab-trigger" id="fixtures" onclick="handleTabSwitch('fixtures', this)">
+      <i data-lucide="calendar-days"></i> Fixtures
+    </button>
+    <button class="tab-trigger" id="table" onclick="handleTabSwitch('table', this)">
+      <i data-lucide="bar-chart-2"></i> Table
+    </button>
+  </div>
+
+  <!-- Live Scores Panel -->
+  <div class="tab-content-panel active" id="tab-panel-live">
+    <div class="league-filter-pills" id="scores-league-filter-pills" style="display:none"></div>
+    <div class="match-rows-container reveal" id="scores-data-list">
+      <div class="skeleton-loader" style="height:64px"></div>
+      <div class="skeleton-loader" style="height:64px;margin-top:10px"></div>
+      <div class="skeleton-loader" style="height:64px;margin-top:10px"></div>
+    </div>
+  </div>
+
+  <!-- Fixtures Panel -->
+  <div class="tab-content-panel" id="tab-panel-fixtures">
+    <div class="league-filter-pills" id="fixtures-league-filter-pills" style="display:none"></div>
+    <div class="fixtures-container" id="fixtures-data-list">
+      <div class="skeleton-loader" style="height:56px"></div>
+      <div class="skeleton-loader" style="height:56px;margin-top:10px"></div>
+      <div class="skeleton-loader" style="height:56px;margin-top:10px"></div>
+    </div>
+  </div>
+
+  <!-- Table Panel -->
+  <div class="tab-content-panel" id="tab-panel-table">
+    <div class="league-filter-pills" id="league-filter-pills"></div>
+    <div class="table-container-wrap">
+      <table class="league-standings-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Team</th>
+            <th>P</th>
+            <th>W</th>
+            <th>D</th>
+            <th>L</th>
+            <th>GF</th>
+            <th>GA</th>
+            <th>GD</th>
+            <th>Pts</th>
+          </tr>
+        </thead>
+        <tbody id="table-data-body">
+          <tr><td colspan="10"><div class="skeleton-loader" style="height:44px;margin:6px 0"></div></td></tr>
+          <tr><td colspan="10"><div class="skeleton-loader" style="height:44px;margin:6px 0"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     5. WHAT WE OFFER (FEATURES GRID)
+═══════════════════════════════════════ -->
+<section class="features-section">
+  <p class="section-eyebrow-center reveal">WHAT WE OFFER</p>
+  <h2 class="section-title-center reveal stagger-1">Everything Malawi Football <span class="gold">Needs</span></h2>
+  
+  <div class="features-grid-layout">
+    <div class="feature-card-item reveal stagger-1">
+      <div class="feature-card-icon"><i data-lucide="radio"></i></div>
+      <h3>Live Scores</h3>
+      <p>Follow every goal, red card, and final whistle as it happens across all NAYSA community fixtures.</p>
+    </div>
+
+    <div class="feature-card-item reveal stagger-2">
+      <div class="feature-card-icon"><i data-lucide="calendar-days"></i></div>
+      <h3>Fixtures &amp; Results</h3>
+      <p>Browse the full schedule, venues, and kick-off times for all registered teams this season.</p>
+    </div>
+
+    <div class="feature-card-item reveal stagger-3">
+      <div class="feature-card-icon"><i data-lucide="bar-chart-2"></i></div>
+      <h3>League Tables</h3>
+      <p>Track standings, goal differences, and promotion battles in real time throughout the season.</p>
+    </div>
+
+    <div class="feature-card-item reveal stagger-4">
+      <div class="feature-card-icon"><i data-lucide="newspaper"></i></div>
+      <h3>Local Football News</h3>
+      <p>Stories from the grassroots &mdash; match reports, player spotlights, and association updates.</p>
+    </div>
+
+    <div class="feature-card-item reveal stagger-5">
+      <div class="feature-card-icon"><i data-lucide="user-round"></i></div>
+      <h3>Player Profiles</h3>
+      <p>Build a public profile, log match stats, and gain visibility with clubs and scouts across Malawi.</p>
+    </div>
+
+    <div class="feature-card-item reveal stagger-6">
+      <div class="feature-card-icon"><i data-lucide="shield-check"></i></div>
+      <h3>Team Management</h3>
+      <p>Register a squad, manage line-ups, submit match data, and run your club from one dashboard.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     6. FOOTBALL NEWS SECTION
+═══════════════════════════════════════ -->
+<section class="news-section" id="news">
+  <div class="news-header-flex reveal">
+    <div class="news-heading-left">
+      <p class="eyebrow">LATEST</p>
+      <h2>Football <span>News</span></h2>
+    </div>
+    <a href="/portal/" class="news-view-all-link">
+      ALL STORIES <i data-lucide="arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="news-cards-grid" id="news-data-grid">
+    <div class="skeleton-loader" style="height:340px"></div>
+    <div class="skeleton-loader" style="height:340px"></div>
+    <div class="skeleton-loader" style="height:340px"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     7. PLAYER VISIBILITY & SPOTLIGHT
+═══════════════════════════════════════ -->
+<section class="player-visibility-section" id="players">
+  <div class="player-vis-copy reveal reveal-left">
+    <p class="eyebrow">PLAYER VISIBILITY</p>
+    <h2>
+      Your Talent<br>
+      <span class="gold">Deserves</span><br>
+      To Be Seen
+    </h2>
+    <p>
+      NAYSA Sport gives Malawi community players a platform to build a public profile,
+      log match statistics, and get noticed by clubs, coaches, and scouts &mdash; from within Blantyre and beyond.
+    </p>
+
+    <div class="player-stats-counter-row">
+      <div class="player-stat-col">
+        <strong id="stat-count-players">&mdash;</strong>
+        <small>Profiles</small>
+      </div>
+      <div class="player-stat-col">
+        <strong>12</strong>
+        <small>Positions</small>
+      </div>
+      <div class="player-stat-col">
+        <strong id="stat-count-teams">&mdash;</strong>
+        <small>Teams</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="player-vis-showcase reveal reveal-right">
+    <div class="player-photo-frame" id="player-photo-container">
+      <div class="player-fallback-avatar"><i data-lucide="user-round"></i></div>
+    </div>
+
+    <!-- Player of the Month Badge (Top Goal Scorer) -->
+    <div class="potm-gold-overlay" id="potm-badge-overlay" style="display:none">
+      <i data-lucide="star"></i>
+      <div class="potm-text-details">
+        <strong>Player of the Month</strong>
+        <span id="potm-player-name">&mdash;</span>
+      </div>
+      <span class="potm-goals-pill" id="potm-goals-display"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     8. DOWNLOAD THE NAYSA APP
+═══════════════════════════════════════ -->
+<section class="download-cta-section">
+  <div class="download-icon-circle reveal reveal-scale"><i data-lucide="download"></i></div>
+  <h2 class="reveal stagger-1">Download the NAYSA App</h2>
+  <p class="dl-lead reveal stagger-2">Live scores, fixtures, and your team dashboard &mdash; always in your pocket. Free for Android.</p>
+  
+  <div class="reveal stagger-3">
+    <a class="btn-download-gold" href="/downloads/naysa-sport.apk" download>
+      <i data-lucide="download"></i> DOWNLOAD APK &mdash; FREE
+    </a>
+  </div>
+
+  <p class="download-meta-sub reveal stagger-4">Android 6.0 and above &nbsp;&middot;&nbsp; No app store required &nbsp;&middot;&nbsp; 14 MB</p>
+
+  <div class="download-features-row">
+    <div class="dl-feature-col reveal stagger-1">
+      <i data-lucide="wifi-off"></i>
+      <strong>Works Offline</strong>
+      <span>View cached scores without data</span>
+    </div>
+    <div class="dl-feature-col reveal stagger-2">
+      <i data-lucide="bell"></i>
+      <strong>Match Alerts</strong>
+      <span>Push notifications for your team</span>
+    </div>
+    <div class="dl-feature-col reveal stagger-3">
+      <i data-lucide="lock"></i>
+      <strong>Private &amp; Secure</strong>
+      <span>Your data stays on your device</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     9. JOIN THE NAYSA COMMUNITY
+═══════════════════════════════════════ -->
+<section class="community-cta-section">
+  <div class="community-card-box reveal reveal-scale">
+    <img src="/logo.png" alt="NAYSA Logo" class="community-logo-crest" onerror="this.style.display='none'" />
+    <h2>Join the <span>NAYSA</span> Community</h2>
+    <p>Register your team today and become part of Malawi&rsquo;s fastest-growing grassroots football network. Free to join, built for communities.</p>
+
+    <div class="community-btn-group">
+      <button class="btn-comm-register" onclick="location='/portal/'">
+        <i data-lucide="shield"></i> Register Your Team
+      </button>
+      <button class="btn-comm-login" onclick="location='/portal/'">
+        <i data-lucide="circle-user-round"></i> Already Registered? Login
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     10. MULTI-COLUMN FOOTER
+═══════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="footer-columns-grid">
+    <!-- Brand Info -->
+    <div class="footer-brand-side reveal stagger-1">
+      <div class="footer-brand-badge">
+        <img src="/logo.png" alt="NAYSA" onerror="this.style.display='none'" />
+        <div>
+          <strong>NAYSA Sport</strong>
+        </div>
+      </div>
+      <p class="footer-about-text">
+        A grassroots football platform for Malawi communities &mdash; connecting fans, players, and teams across Blantyre.
+      </p>
+      <div class="footer-location-indicator">
+        <i data-lucide="map-pin"></i>
+        <span>Nancholi, Blantyre, Malawi</span>
+      </div>
+    </div>
+
+    <!-- Platform Links -->
+    <div class="footer-menu-col reveal stagger-2">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="#scores">Live Scores</a></li>
+        <li><a href="#fixtures">Fixtures</a></li>
+        <li><a href="#table">League Table</a></li>
+        <li><a href="#news">Football News</a></li>
+        <li><a href="#players">Player Profiles</a></li>
+        <li><a href="/portal/">Team Management</a></li>
+      </ul>
+    </div>
+
+    <!-- Teams Links -->
+    <div class="footer-menu-col reveal stagger-3">
+      <h4>Teams</h4>
+      <ul>
+        <li><a href="/portal/">Register a Team</a></li>
+        <li><a href="/portal/">Team Login</a></li>
+        <li><a href="/downloads/naysa-sport.apk" download>Download APK</a></li>
+        <li><a href="mailto:info@naysasport.com">Contact NAYSA</a></li>
+        <li><a href="#top">About Us</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-legal-bottom">
+    <span>&copy; <span id="current-year"></span> NAYSA Sport &middot; Malawi</span>
+    <div class="footer-legal-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="mailto:info@naysasport.com">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════
+     JAVASCRIPT & API LOGIC
+═══════════════════════════════════════ -->
+<script>
+const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000/backend/api'
+  : 'https://naysasport.com/backend/api';
+
+document.getElementById('current-year').textContent = new Date().getFullYear();
+
+// Scroll Progress Bar & Navbar Shadow on Scroll
+const progressBar = document.getElementById('scroll-progress-bar');
+const mainNav = document.getElementById('main-nav');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progressPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  if (progressBar) progressBar.style.width = progressPercent + '%';
+
+  if (mainNav) {
+    if (scrollTop > 20) {
+      mainNav.classList.add('scrolled');
+    } else {
+      mainNav.classList.remove('scrolled');
+    }
+  }
+}, { passive: true });
+
+// Mobile Drawer Toggle
+const navToggleBtn = document.getElementById('nav-toggle');
+const mobileDrawer = document.getElementById('mobile-drawer');
+if (navToggleBtn && mobileDrawer) {
+  navToggleBtn.addEventListener('click', () => {
+    mobileDrawer.classList.toggle('open');
+  });
+}
+function closeMobileMenu() {
+  if (mobileDrawer) mobileDrawer.classList.remove('open');
+}
+
+// Helpers
+async function fetchApi(path) {
+  try {
+    const res = await fetch(API_BASE + path);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return await res.json();
+  } catch (err) {
+    console.warn('API fetch warning:', path, err.message);
+    return null;
+  }
+}
+
+function formatDateDisplay(raw) {
+  if (!raw) return '';
+  const d = new Date(raw);
+  return isNaN(d) ? raw : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function formatKickoffDisplay(raw) {
+  if (!raw) return '';
+  const d = new Date(raw);
+  return isNaN(d) ? raw : d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) +
+    ' ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+
+function sanitizeText(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+let teamLogoById = {};
+let cachedMatches = [];
+let cachedLeagues = [];
+let cachedTeams = [];
+let leagueMap = {};
+let teamMap = {};
+let selectedScoreLeagueId = null;
+let selectedFixtureLeagueId = null;
+let cachedStandings = [];
+let selectedLeagueId = null;
+
+function resolveAssetUrl(value) { if (!value) return ''; return /^https?:\/\//i.test(value) ? value : 'https://naysasport.com' + (String(value).startsWith('/') ? value : '/' + value); }
+function teamCrest(teamId, teamName) { const logo = teamLogoById[teamId]; const initial = sanitizeText((String(teamName || '?').trim().charAt(0) || '?').toUpperCase()); return logo ? '<img class="team-crest-image" src="' + sanitizeText(resolveAssetUrl(logo)) + '" alt="" onerror="this.outerHTML=\'<span class=&quot;team-crest-fallback&quot;>' + initial + '</span>\'">' : '<span class="team-crest-fallback">' + initial + '</span>'; }
+function teamLabel(teamId, teamName, className) { return '<span class="' + className + '">' + teamCrest(teamId, teamName) + '<span class="fixture-club-name">' + sanitizeText(teamName || 'TBC') + '</span></span>'; }
+function eventIcon(type) { const icons = {'Goal':'⚽','Own Goal':'⚽︎','Yellow Card':'🟨','Red Card':'🟥','Substitution':'↔','Shootout Goal':'✓','Shootout Miss':'✕'}; return icons[type] || '•'; }
+
+function getMatchLeagueInfo(m) {
+  if (!m) return { id: 'other', name: 'Other Matches' };
+  let id = m.leagueId ? String(m.leagueId).trim() : '';
+  let name = (m.leagueName || m.competition || '').trim();
+
+  if (!name && id && leagueMap[id]) {
+    name = leagueMap[id].name;
+  }
+  if (!name && m.homeTeamId && teamMap[m.homeTeamId]) {
+    const ht = teamMap[m.homeTeamId];
+    if (ht.leagueName) name = ht.leagueName;
+    if (!id && ht.leagueId) id = String(ht.leagueId);
+  }
+  if (!name && m.awayTeamId && teamMap[m.awayTeamId]) {
+    const at = teamMap[m.awayTeamId];
+    if (at.leagueName) name = at.leagueName;
+    if (!id && at.leagueId) id = String(at.leagueId);
+  }
+
+  if (name && (!id || !leagueMap[id])) {
+    const found = (cachedLeagues || []).find(l => l.name && l.name.toLowerCase() === name.toLowerCase());
+    if (found) {
+      id = String(found.id);
+      name = found.name;
+    }
+  }
+
+  if (!name) {
+    name = 'Grassroots League';
+  }
+  const canonicalId = id || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'other';
+  return { id: canonicalId, name };
+}
+
+function groupAndSortMatchesByLeague(matchesList, isFixture = false) {
+  const groups = {};
+  (matchesList || []).forEach(m => {
+    const { id, name } = getMatchLeagueInfo(m);
+    const key = name.toLowerCase().trim();
+    if (!groups[key]) {
+      groups[key] = {
+        id,
+        name,
+        hasLive: false,
+        matches: []
+      };
+    }
+    if (m.status === 'live') {
+      groups[key].hasLive = true;
+    }
+    groups[key].matches.push(m);
+  });
+
+  Object.values(groups).forEach(g => {
+    if (isFixture) {
+      g.matches.sort((a, b) => new Date(a.kickoff || 0) - new Date(b.kickoff || 0));
+    } else {
+      g.matches.sort((a, b) => {
+        if (a.status === 'live' && b.status !== 'live') return -1;
+        if (b.status === 'live' && a.status !== 'live') return 1;
+        return new Date(b.kickoff || 0) - new Date(a.kickoff || 0);
+      });
+    }
+  });
+
+  return Object.values(groups).sort((a, b) => {
+    if (a.hasLive && !b.hasLive) return -1;
+    if (!a.hasLive && b.hasLive) return 1;
+    return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+  });
+}
+
+function openMatchDetails(matchId) {
+  const overlay = document.getElementById('match-detail-overlay'), content = document.getElementById('match-detail-content');
+  if (!overlay || !content) return;
+  content.innerHTML = '<p class="empty-state-notice">Loading match details…</p>';
+  overlay.classList.add('open');
+  fetchApi('/matches/' + encodeURIComponent(matchId)).then(match => {
+    if (!match) {
+      content.innerHTML = '<p class="empty-state-notice">Match details are unavailable right now.</p>';
+      return;
+    }
+    const played = match.status === 'live' || match.status === 'fullTime';
+    const status = match.status === 'live' ? 'LIVE' + (match.minute ? ' · ' + match.minute + "'" : '') : match.status === 'fullTime' ? 'FULL TIME' : 'UPCOMING';
+    const allEvents = match.events || [];
+    const shootout = allEvents.filter(e => e.type === 'Shootout Goal');
+    const homePens = shootout.filter(e => e.teamName === match.homeTeamName).length, awayPens = shootout.filter(e => e.teamName === match.awayTeamName).length;
+    const events = allEvents.map(e => '<li><span class="match-event-minute">' + (e.minute || 0) + "'</span><span class=\"match-event-icon " + (e.type === 'Own Goal' ? 'own-goal' : '') + '\">' + eventIcon(e.type) + '</span><span><strong>' + sanitizeText(e.type || 'Match event') + '</strong>' + (e.playerName ? ' · ' + sanitizeText(e.playerName) : '') + '</span></li>').join('');
+    const shootoutResult = shootout.length ? '<div class="shootout-result">Penalties: ' + homePens + ' – ' + awayPens + '</div>' : '';
+    const leagueInfo = getMatchLeagueInfo(match);
+    content.innerHTML = '<p class="eyebrow">' + sanitizeText(leagueInfo.name || match.competition || match.leagueName || 'Match details') + '</p><div class="match-detail-score"><div class="match-detail-team">' + teamCrest(match.homeTeamId,match.homeTeamName) + '<span>' + sanitizeText(match.homeTeamName || 'Home') + '</span></div><div class="match-detail-score-value">' + (played ? (match.homeScore ?? 0) + ' – ' + (match.awayScore ?? 0) : 'VS') + '</div><div class="match-detail-team">' + teamCrest(match.awayTeamId,match.awayTeamName) + '<span>' + sanitizeText(match.awayTeamName || 'Away') + '</span></div></div><div class="match-detail-meta">' + sanitizeText(status) + '<br>' + sanitizeText(formatKickoffDisplay(match.kickoff)) + (match.venue ? '<br>' + sanitizeText(match.venue) : '') + '</div>' + shootoutResult + '<ul class="match-event-list">' + (events || '<li>No match events recorded yet.</li>') + '</ul>';
+  });
+}
+function closeMatchDetails() { document.getElementById('match-detail-overlay')?.classList.remove('open'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMatchDetails(); });
+
+// Tab Switching
+function handleTabSwitch(tabName, triggerBtn) {
+  document.querySelectorAll('.tab-trigger').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab-content-panel').forEach(panel => panel.classList.remove('active'));
+  triggerBtn.classList.add('active');
+  const targetPanel = document.getElementById('tab-panel-' + tabName);
+  if (targetPanel) {
+    targetPanel.classList.add('active');
+    if (window.lucide) lucide.createIcons();
+    initScrollObserver();
+  }
+}
+
+// 1. Ticker
+function renderTicker(matches) {
+  const list = matches || cachedMatches;
+  if (!list || !list.length) return;
+  const rel = list.filter(m => m.status === 'live' || m.status === 'fullTime');
+  if (!rel.length) return;
+  const itemsHtml = rel.map(m => {
+    const isLive = m.status === 'live';
+    const badge = isLive
+      ? '<span class="ticker-badge live">LIVE' + (m.minute ? ' ' + m.minute + "'" : '') + '</span>'
+      : '<span class="ticker-badge ft">FT</span>';
+    const leagueInfo = getMatchLeagueInfo(m);
+    const leagueTag = leagueInfo && leagueInfo.name ? '<span class="ticker-league">' + sanitizeText(leagueInfo.name) + '</span> ' : '';
+    return '<div class="ticker-item">' + badge + ' ' + leagueTag + sanitizeText(m.homeTeamName || '?') +
+      ' <span class="ticker-score">' + (m.homeScore ?? 0) + ' &ndash; ' + (m.awayScore ?? 0) + '</span> ' +
+      sanitizeText(m.awayTeamName || '?') + '</div>';
+  }).join('');
+  const tickerEl = document.getElementById('ticker-track');
+  if (tickerEl) tickerEl.innerHTML = itemsHtml + itemsHtml;
+}
+
+// 2. Scores
+function renderScores(matches) {
+  if (matches) cachedMatches = matches;
+  const container = document.getElementById('scores-data-list');
+  const filterWrap = document.getElementById('scores-league-filter-pills');
+  if (!container) return;
+
+  const relevantMatches = (cachedMatches || []).filter(m => m.status === 'live' || m.status === 'fullTime');
+
+  if (!relevantMatches.length) {
+    if (filterWrap) { filterWrap.innerHTML = ''; filterWrap.style.display = 'none'; }
+    container.innerHTML = '<div class="empty-state-notice">No recent or live matches right now.</div>';
+    return;
+  }
+
+  const allGroups = groupAndSortMatchesByLeague(relevantMatches, false);
+
+  if (filterWrap) {
+    if (allGroups.length > 1) {
+      if (selectedScoreLeagueId && !allGroups.some(g => g.id === selectedScoreLeagueId)) {
+        selectedScoreLeagueId = null;
+      }
+      filterWrap.innerHTML = '<span class="league-pill ' + (selectedScoreLeagueId === null ? 'active' : '') + '" onclick="applyScoreLeagueFilter(null, this)">All Leagues</span>' +
+        allGroups.map(g =>
+          '<span class="league-pill ' + (selectedScoreLeagueId === g.id ? 'active' : '') + '" onclick="applyScoreLeagueFilter(\'' + sanitizeText(g.id) + '\', this)">' +
+            sanitizeText(g.name) + (g.hasLive ? ' • LIVE' : '') +
+          '</span>'
+        ).join('');
+      filterWrap.style.display = 'flex';
+    } else {
+      filterWrap.innerHTML = '';
+      filterWrap.style.display = 'none';
+      selectedScoreLeagueId = null;
+    }
+  }
+
+  const displayedGroups = selectedScoreLeagueId
+    ? allGroups.filter(g => g.id === selectedScoreLeagueId)
+    : allGroups;
+
+  if (!displayedGroups.length) {
+    container.innerHTML = '<div class="empty-state-notice">No matches found for this league right now.</div>';
+    return;
+  }
+
+  let cardIndex = 0;
+  container.innerHTML = displayedGroups.map(group => {
+    const countText = group.matches.length === 1 ? '1 match' : group.matches.length + ' matches';
+    const liveIndicator = group.hasLive
+      ? '<span class="league-live-indicator"><i class="live-dot"></i> LIVE NOW</span>'
+      : '';
+    const cardsHtml = group.matches.map(m => {
+      cardIndex++;
+      const isLive = m.status === 'live';
+      const badge = isLive
+        ? '<span class="match-badge live">LIVE' + (m.minute ? ' ' + m.minute + "'" : '') + '</span>'
+        : '<span class="match-badge ft">FT</span>';
+      return '<div class="match-card-row reveal stagger-' + ((cardIndex % 5) + 1) + '" onclick="openMatchDetails(\'' + sanitizeText(m.id) + '\')">' +
+        '<span class="match-team-left">' + teamLabel(m.homeTeamId, m.homeTeamName || 'Home', 'score-club') + '</span>' +
+        '<div class="match-score-center">' +
+          badge +
+          '<div class="match-digits">' +
+            '<span>' + (m.homeScore ?? 0) + '</span>' +
+            '<span class="match-sep">&ndash;</span>' +
+            '<span>' + (m.awayScore ?? 0) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<span class="match-team-right">' + teamLabel(m.awayTeamId, m.awayTeamName || 'Away', 'score-club') + '</span>' +
+      '</div>';
+    }).join('');
+
+    return '<div class="league-match-group reveal">' +
+      '<div class="league-group-header">' +
+        '<div class="league-group-title">' +
+          '<span class="league-icon"><i data-lucide="trophy"></i></span>' +
+          '<h3 class="league-name">' + sanitizeText(group.name) + '</h3>' +
+          '<span class="league-match-count">' + countText + '</span>' +
+        '</div>' +
+        liveIndicator +
+      '</div>' +
+      '<div class="league-match-list">' +
+        cardsHtml +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+  initScrollObserver();
+}
+
+function applyScoreLeagueFilter(leagueId, pillEl) {
+  selectedScoreLeagueId = leagueId;
+  const filterWrap = document.getElementById('scores-league-filter-pills');
+  if (filterWrap) {
+    filterWrap.querySelectorAll('.league-pill').forEach(p => p.classList.remove('active'));
+    if (pillEl) pillEl.classList.add('active');
+  }
+  renderScores(cachedMatches);
+}
+
+// 3. Fixtures
+function renderFixtures(matches) {
+  if (matches) cachedMatches = matches;
+  const container = document.getElementById('fixtures-data-list');
+  const filterWrap = document.getElementById('fixtures-league-filter-pills');
+  if (!container) return;
+
+  const upcomingMatches = (cachedMatches || []).filter(m =>
+    m.status === 'scheduled' || m.status === 'upcoming' || (!m.status && m.kickoff && new Date(m.kickoff) > new Date())
+  );
+
+  if (!upcomingMatches.length) {
+    if (filterWrap) { filterWrap.innerHTML = ''; filterWrap.style.display = 'none'; }
+    container.innerHTML = '<div class="empty-state-notice">No upcoming fixtures scheduled.</div>';
+    return;
+  }
+
+  const allGroups = groupAndSortMatchesByLeague(upcomingMatches, true);
+
+  if (filterWrap) {
+    if (allGroups.length > 1) {
+      if (selectedFixtureLeagueId && !allGroups.some(g => g.id === selectedFixtureLeagueId)) {
+        selectedFixtureLeagueId = null;
+      }
+      filterWrap.innerHTML = '<span class="league-pill ' + (selectedFixtureLeagueId === null ? 'active' : '') + '" onclick="applyFixtureLeagueFilter(null, this)">All Leagues</span>' +
+        allGroups.map(g =>
+          '<span class="league-pill ' + (selectedFixtureLeagueId === g.id ? 'active' : '') + '" onclick="applyFixtureLeagueFilter(\'' + sanitizeText(g.id) + '\', this)">' +
+            sanitizeText(g.name) +
+          '</span>'
+        ).join('');
+      filterWrap.style.display = 'flex';
+    } else {
+      filterWrap.innerHTML = '';
+      filterWrap.style.display = 'none';
+      selectedFixtureLeagueId = null;
+    }
+  }
+
+  const displayedGroups = selectedFixtureLeagueId
+    ? allGroups.filter(g => g.id === selectedFixtureLeagueId)
+    : allGroups;
+
+  if (!displayedGroups.length) {
+    container.innerHTML = '<div class="empty-state-notice">No upcoming fixtures for this league.</div>';
+    return;
+  }
+
+  let cardIndex = 0;
+  container.innerHTML = displayedGroups.map(group => {
+    const countText = group.matches.length === 1 ? '1 fixture' : group.matches.length + ' fixtures';
+    const cardsHtml = group.matches.map(m => {
+      cardIndex++;
+      return '<div class="fixture-item-row reveal stagger-' + ((cardIndex % 5) + 1) + '" onclick="openMatchDetails(\'' + sanitizeText(m.id) + '\')">' +
+        '<span class="fixture-kickoff">' + formatKickoffDisplay(m.kickoff) + '</span>' +
+        '<span class="fixture-teams-matchup">' + teamLabel(m.homeTeamId, m.homeTeamName || 'TBC', 'fixture-club') +
+          '<span class="fixture-vs-span">vs</span>' + teamLabel(m.awayTeamId, m.awayTeamName || 'TBC', 'fixture-club') + '</span>' +
+        '<span class="fixture-location">' + sanitizeText(m.venue || m.wardName || '') + '</span>' +
+      '</div>';
+    }).join('');
+
+    return '<div class="league-match-group reveal">' +
+      '<div class="league-group-header">' +
+        '<div class="league-group-title">' +
+          '<span class="league-icon"><i data-lucide="calendar"></i></span>' +
+          '<h3 class="league-name">' + sanitizeText(group.name) + '</h3>' +
+          '<span class="league-match-count">' + countText + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="league-fixture-list">' +
+        cardsHtml +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+  initScrollObserver();
+}
+
+function applyFixtureLeagueFilter(leagueId, pillEl) {
+  selectedFixtureLeagueId = leagueId;
+  const filterWrap = document.getElementById('fixtures-league-filter-pills');
+  if (filterWrap) {
+    filterWrap.querySelectorAll('.league-pill').forEach(p => p.classList.remove('active'));
+    if (pillEl) pillEl.classList.add('active');
+  }
+  renderFixtures(cachedMatches);
+}
+
+// 4. League Table
+
+function renderTableRows(leagueId) {
+  const rows = cachedStandings.filter(s => s.leagueId === leagueId);
+  const tbody = document.getElementById('table-data-body');
+  if (!rows || !rows.length) {
+    tbody.innerHTML = '<tr><td colspan="10" class="empty-state-notice">No standings recorded yet.</td></tr>';
+    return;
+  }
+  const orderedRows = [...rows].sort((a, b) => {
+    const groupCompare = String(a.groupName || 'Teams').localeCompare(String(b.groupName || 'Teams'));
+    if (groupCompare !== 0) return groupCompare;
+    const pointsA = (Number(a.won) || 0) * 3 + (Number(a.drawn) || 0);
+    const pointsB = (Number(b.won) || 0) * 3 + (Number(b.drawn) || 0);
+    return pointsB - pointsA || ((Number(b.goalsFor) || 0) - (Number(b.goalsAgainst) || 0)) - ((Number(a.goalsFor) || 0) - (Number(a.goalsAgainst) || 0));
+  });
+  let currentGroup = null;
+  let position = 0;
+  tbody.innerHTML = orderedRows.map(t => {
+    const group = String(t.groupName || '').trim() || 'Teams';
+    const changedGroup = group !== currentGroup;
+    const groupHeading = changedGroup ? '<tr class="standings-group-row"><td colspan="10">' + sanitizeText(group) + '</td></tr>' : '';
+    currentGroup = group;
+    position = changedGroup ? 1 : position + 1;
+    const pts = (t.won * 3) + (t.drawn || 0);
+    const gd = (t.goalsFor || 0) - (t.goalsAgainst || 0);
+    const gdColor = gd >= 0 ? 'color:var(--green-light)' : 'color:var(--red)';
+    return groupHeading + '<tr>' +
+      '<td class="td-pos">' + position + '</td>' +
+      '<td>' + sanitizeText(t.name || '?') + '</td>' +
+      '<td>' + (t.played || 0) + '</td>' +
+      '<td>' + (t.won || 0) + '</td>' +
+      '<td>' + (t.drawn || 0) + '</td>' +
+      '<td>' + (t.lost || 0) + '</td>' +
+      '<td>' + (t.goalsFor || 0) + '</td>' +
+      '<td>' + (t.goalsAgainst || 0) + '</td>' +
+      '<td style="' + gdColor + '; font-weight:700">' + (gd >= 0 ? '+' : '') + gd + '</td>' +
+      '<td class="td-pts">' + pts + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function initLeagueTable(standings, leagues) {
+  cachedStandings = standings || [];
+  cachedLeagues = leagues || [];
+  const filterWrap = document.getElementById('league-filter-pills');
+  if (filterWrap) {
+    filterWrap.innerHTML = cachedLeagues.map((l, index) => '<span class="league-pill ' + (index === 0 ? 'active' : '') + '" onclick="applyLeagueFilter(\'' + l.id + '\', this)">' + sanitizeText(l.name) + '</span>').join('');
+  }
+  selectedLeagueId = cachedLeagues.length ? cachedLeagues[0].id : null;
+  renderTableRows(selectedLeagueId);
+}
+
+function applyLeagueFilter(lid, pillEl) {
+  selectedLeagueId = lid;
+  document.querySelectorAll('#league-filter-pills .league-pill').forEach(p => p.classList.remove('active'));
+  if (pillEl) pillEl.classList.add('active');
+  renderTableRows(lid);
+}
+
+// 5. News
+function renderNewsGrid(newsList) {
+  const container = document.getElementById('news-data-grid');
+  if (!newsList || !newsList.length) {
+    container.innerHTML = '<div class="empty-state-notice" style="grid-column:1/-1">No news published yet.</div>';
+    return;
+  }
+  container.innerHTML = newsList.slice(0, 3).map((n, i) => {
+    const media = n.imageUrl
+      ? '<img src="' + sanitizeText(n.imageUrl) + '" alt="" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class=&quot;news-placeholder-icon&quot;><svg width=&quot;48&quot; height=&quot;48&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot;><rect x=&quot;3&quot; y=&quot;3&quot; width=&quot;18&quot; height=&quot;18&quot; rx=&quot;2&quot;/><path d=&quot;M3 9h18M9 21V9&quot;/></svg></div>\'" />'
+      : '<div class="news-placeholder-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>';
+    return '<article class="news-story-card reveal stagger-' + (i + 1) + '" onclick="location=\'/portal/\'">' +
+      '<div class="news-media-wrap">' + media + '</div>' +
+      '<div class="news-content-box">' +
+        '<div class="news-tag-row">' +
+          '<span class="news-badge-category">' + sanitizeText(n.category || n.tag || 'News') + '</span>' +
+          '<span class="news-published-date">' + formatDateDisplay(n.date) + '</span>' +
+        '</div>' +
+        '<h3>' + sanitizeText(n.title || 'Untitled') + '</h3>' +
+        '<p>' + sanitizeText(n.summary || n.body || n.content || '') + '</p>' +
+      '</div>' +
+    '</article>';
+  }).join('');
+
+  initScrollObserver();
+}
+
+// 6. Player of the Month & Counters (with number counter animation)
+function animateValue(obj, start, end, duration) {
+  let startTimestamp = null;
+  const step = (timestamp) => {
+    if (!startTimestamp) startTimestamp = timestamp;
+    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    obj.innerHTML = Math.floor(progress * (end - start) + start) + '+';
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    }
+  };
+  window.requestAnimationFrame(step);
+}
+
+function renderPlayerStatsAndPOTM(playerStats, allPlayers, allTeams) {
+  const playerCount = (allPlayers ? allPlayers.length : 0);
+  const teamCount = (allTeams ? allTeams.length : 0);
+
+  const playerEl = document.getElementById('stat-count-players');
+  const teamEl = document.getElementById('stat-count-teams');
+  
+  if (playerEl) playerEl.textContent = playerCount + '+';
+  if (teamEl) teamEl.textContent = teamCount;
+
+  // Top Goal Scorer -> Player of the Month
+  const scorers = (playerStats || []).filter(p => p.goals > 0).sort((a, b) => b.goals - a.goals);
+  if (!scorers.length) return;
+
+  const topScorer = scorers[0];
+  const potmBadge = document.getElementById('potm-badge-overlay');
+  const potmName = document.getElementById('potm-player-name');
+  const potmGoals = document.getElementById('potm-goals-display');
+  const photoWrap = document.getElementById('player-photo-container');
+
+  if (potmBadge && potmName && potmGoals) {
+    potmBadge.style.display = 'flex';
+    potmName.textContent = topScorer.name + (topScorer.teamName ? ' — ' + topScorer.teamName : '');
+    potmGoals.textContent = topScorer.goals + ' goal' + (topScorer.goals !== 1 ? 's' : '');
+  }
+
+  if (topScorer.imageUrl && photoWrap) {
+    photoWrap.innerHTML = '<img src="' + sanitizeText(topScorer.imageUrl) + '" alt="' + sanitizeText(topScorer.name) + '" />';
+  }
+}
+
+// ─── SCROLL REVEAL OBSERVER ───
+function initScrollObserver() {
+  const reveals = document.querySelectorAll('.reveal:not(.is-visible)');
+  if (!reveals.length) return;
+
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.12,
+    rootMargin: '0px 0px -40px 0px'
+  });
+
+  reveals.forEach(el => observer.observe(el));
+}
+
+// Active Nav link highlight on scroll
+function initNavScrollHighlight() {
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  window.addEventListener('scroll', () => {
+    let currentId = '';
+    const scrollPosition = window.scrollY + 140;
+
+    sections.forEach(section => {
+      const top = section.offsetTop;
+      const height = section.offsetHeight;
+      if (scrollPosition >= top && scrollPosition < top + height) {
+        currentId = section.getAttribute('id');
+      }
+    });
+
+    if (currentId) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentId || link.getAttribute('data-nav') === currentId) {
+          link.classList.add('active');
+        }
+      });
+    }
+  }, { passive: true });
+}
+
+// Bootstrap
+async function loadLandingPageData() {
+  const [matches, liveData, news, players, teams, leagues] = await Promise.all([
+    fetchApi('/matches'),
+    fetchApi('/league-live-data'),
+    fetchApi('/news'),
+    fetchApi('/players'),
+    fetchApi('/teams'),
+    fetchApi('/leagues'),
+  ]);
+
+  cachedMatches = matches || [];
+  cachedTeams = teams || [];
+  cachedLeagues = leagues || [];
+  leagueMap = Object.fromEntries((leagues || []).map(l => [String(l.id), l]));
+  teamMap = Object.fromEntries((teams || []).map(t => [String(t.id), t]));
+  teamLogoById = Object.fromEntries((teams || []).map(t => [t.id, t.logoUrl]).filter(([, logo]) => Boolean(logo)));
+
+  renderTicker(cachedMatches);
+  renderScores(cachedMatches);
+  renderFixtures(cachedMatches);
+  initLeagueTable(liveData ? liveData.standings : [], leagues);
+  renderNewsGrid(news);
+  renderPlayerStatsAndPOTM(liveData ? liveData.playerStats : [], players, teams);
+  updateGoogleSportsSchema(cachedMatches);
+
+  // Initialize Lucide icons
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+
+  // Activate scroll animations & nav tracking
+  initScrollObserver();
+  initNavScrollHighlight();
+}
+
+function updateGoogleSportsSchema(matches) {
+  try {
+    const scriptEl = document.getElementById('schema-sports-events');
+    if (!scriptEl || !matches || !matches.length) return;
+
+    // Take top 15 recent and upcoming matches to feed Google Schema
+    const schemaEvents = matches.slice(0, 15).map(m => {
+      const isFinished = m.status === 'fullTime' || m.status === 'completed';
+      const isLive = m.status === 'live';
+      const eventStatus = isFinished
+        ? 'https://schema.org/EventMovedOnline' // Event completed
+        : (isLive ? 'https://schema.org/EventRescheduled' : 'https://schema.org/EventScheduled');
+
+      const item = {
+        '@context': 'https://schema.org',
+        '@type': 'SportsEvent',
+        'name': (m.homeTeamName || 'Home') + ' vs ' + (m.awayTeamName || 'Away'),
+        'startDate': m.kickoff ? new Date(m.kickoff).toISOString() : new Date().toISOString(),
+        'sport': 'Soccer',
+        'homeTeam': {
+          '@type': 'SportsTeam',
+          'name': m.homeTeamName || 'Home Team',
+          'logo': m.homeTeamLogoUrl || 'https://naysasport.com/logo.png'
+        },
+        'awayTeam': {
+          '@type': 'SportsTeam',
+          'name': m.awayTeamName || 'Away Team',
+          'logo': m.awayTeamLogoUrl || 'https://naysasport.com/logo.png'
+        },
+        'location': {
+          '@type': 'Place',
+          'name': m.venue || m.wardName || 'Football Ground, Malawi',
+          'address': {
+            '@type': 'PostalAddress',
+            'addressCountry': 'MW'
+          }
+        },
+        'organizer': {
+          '@type': 'SportsOrganization',
+          'name': m.leagueName || m.competition || 'NAYSA Sport',
+          'url': 'https://naysasport.com'
+        }
+      };
+
+      if (isFinished || isLive) {
+        item.eventStatus = isFinished ? 'https://schema.org/EventScheduled' : 'https://schema.org/EventRescheduled';
+        item.description = 'Final Score: ' + (m.homeTeamName || 'Home') + ' ' + (m.homeScore ?? 0) + ' - ' + (m.awayScore ?? 0) + ' ' + (m.awayTeamName || 'Away');
+      }
+
+      return item;
+    });
+
+    scriptEl.textContent = JSON.stringify(schemaEvents, null, 2);
+  } catch (err) {
+    console.warn('[Schema] Failed to inject dynamic sports schema', err);
+  }
+}
+
+// Initial trigger for in-viewport elements on load
+document.addEventListener('DOMContentLoaded', () => {
+  initScrollObserver();
+});
+
+loadLandingPageData();
+
+// Auto refresh live data every 45s
+setInterval(async function() {
+  const [matches, liveData] = await Promise.all([
+    fetchApi('/matches'),
+    fetchApi('/league-live-data')
+  ]);
+  if (matches) {
+    cachedMatches = matches;
+    renderTicker(cachedMatches);
+    renderScores(cachedMatches);
+    renderFixtures(cachedMatches);
+  }
+  if (liveData) {
+    cachedStandings = liveData.standings || [];
+    renderTableRows(selectedLeagueId);
+  }
+}, 45000);
+</script>
+</body>
+</html>

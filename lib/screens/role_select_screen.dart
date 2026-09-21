@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
+import 'login_screen.dart';
 
 class RoleSelectScreen extends StatelessWidget {
   const RoleSelectScreen({super.key});
@@ -25,11 +26,14 @@ class RoleSelectScreen extends StatelessWidget {
                       color: NasaColors.sun,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.sports_soccer, color: NasaColors.pitchDark, size: 26),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Image.asset('assets/logo.png', fit: BoxFit.contain),
+                    ),
                   ),
                   const SizedBox(width: 12),
                   const Text(
-                    'NASA SPORT',
+                    'NAYSASPORT',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w800,
@@ -63,25 +67,27 @@ class RoleSelectScreen extends StatelessWidget {
                       icon: Icons.groups_2_outlined,
                       onTap: () => AppState.instance.setRole(UserRole.viewer),
                     ),
-                    const SizedBox(height: 14),
+                    /* const SizedBox(height: 14),
                     _RoleCard(
                       title: 'Scout',
                       subtitle: 'Discover players, watch highlight clips, build a watchlist and get alerts.',
                       icon: Icons.travel_explore,
                       onTap: () => AppState.instance.setRole(UserRole.scout),
-                    ),
+                    ), */
                     const SizedBox(height: 14),
                     _RoleCard(
                       title: 'Team / Coach',
                       subtitle: 'Manage your roster, log medical & attendance records, fixtures and finances.',
                       icon: Icons.shield_moon_outlined,
-                      onTap: () => AppState.instance.setRole(UserRole.team),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      ),
                     ),
                   ],
                 ),
               ),
               const Text(
-                'Demo build — all data shown is illustrative.',
+                'Welcome to NAYSASPORT.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white38, fontSize: 11.5),
               ),
@@ -108,25 +114,31 @@ class _RoleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white.withValues(alpha: 0.06),
-      borderRadius: BorderRadius.circular(16),
+      color: NasaColors.bgCard,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: NasaColors.border),
+      ),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           child: Row(
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 52,
+                height: 52,
                 decoration: BoxDecoration(
-                  color: NasaColors.sun.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
+                  color: const Color(0xFF1E3A8A).withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: const Color(0xFF3B82F6).withValues(alpha: 0.3),
+                  ),
                 ),
-                child: Icon(icon, color: NasaColors.sun),
+                child: Icon(icon, color: const Color(0xFF60A5FA), size: 26),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,18 +148,22 @@ class _RoleCard extends StatelessWidget {
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
-                        fontSize: 16,
+                        fontSize: 16.5,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: const TextStyle(color: Colors.white70, fontSize: 12.5, height: 1.3),
+                      style: const TextStyle(
+                        color: NasaColors.textMuted,
+                        fontSize: 12.5,
+                        height: 1.35,
+                      ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Colors.white54),
+              const Icon(Icons.arrow_forward_ios_rounded, color: NasaColors.textMuted, size: 16),
             ],
           ),
         ),

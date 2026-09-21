@@ -31,22 +31,26 @@ class ScoutWatchlistTab extends StatelessWidget {
             return Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: NasaColors.bgCard,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: NasaColors.line),
+                border: Border.all(color: NasaColors.border),
               ),
               child: Row(
                 children: [
-                  InitialsAvatar(text: w.playerName, radius: 20),
+                  InitialsAvatar(
+                    text: w.playerName,
+                    radius: 20,
+                    imageUrl: player?.imageUrl,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(w.playerName, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5)),
-                        Text(w.teamName, style: const TextStyle(fontSize: 11.5, color: NasaColors.slate)),
+                        Text(w.playerName, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13.5, color: Colors.white)),
+                        Text(w.teamName, style: const TextStyle(fontSize: 12, color: NasaColors.textMuted)),
                         const SizedBox(height: 4),
-                        Text('Added ${formatShortDate(w.addedDate)}', style: const TextStyle(fontSize: 10.5, color: NasaColors.slate)),
+                        Text('Added ${formatShortDate(w.addedDate)}', style: const TextStyle(fontSize: 11, color: NasaColors.textLight)),
                       ],
                     ),
                   ),
@@ -54,7 +58,7 @@ class ScoutWatchlistTab extends StatelessWidget {
                     children: [
                       IconButton(
                         icon: Icon(w.alertsEnabled ? Icons.notifications_active : Icons.notifications_off_outlined, size: 20),
-                        color: w.alertsEnabled ? NasaColors.pitch : NasaColors.slate,
+                        color: w.alertsEnabled ? NasaColors.crimson : NasaColors.textMuted,
                         onPressed: () => app.toggleWatchlistAlerts(w.playerId),
                         tooltip: 'Toggle alerts',
                       ),

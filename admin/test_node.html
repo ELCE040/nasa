@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Node</title>
+</head>
+<body>
+    <h2>Testing Node Endpoint</h2>
+    <div id="output" style="background:#f4f4f4; padding:10px; font-family:monospace; border:1px solid #ccc; min-height: 100px;">Running...</div>
+
+    <script>
+        async function test() {
+            const out = document.getElementById('output');
+            try {
+                const data = {
+                  name: "Test Player",
+                  age: 20,
+                  position: "Striker",
+                  teamId: "t123",
+                  teamName: "Test Team",
+                  wardName: "Test Ward",
+                  jerseyNumber: 10,
+                  preferredFoot: "Right",
+                  heightM: 1.75,
+                  bio: "Test bio",
+                  imageUrl: null
+                };
+                
+                const res = await fetch('https://naysasport.com/backend/api/players', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const text = await res.text();
+                out.innerHTML = `<b>Status:</b> ${res.status}<br><br><b>Response:</b><br>${text}`;
+                
+            } catch (e) {
+                out.innerHTML = `<b>Network Error:</b> ${e.message}`;
+            }
+        }
+        test();
+    </script>
+</body>
+</html>

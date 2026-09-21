@@ -33,56 +33,64 @@ class TeamProfileScreen extends StatelessWidget {
           body: ListView(
             padding: const EdgeInsets.only(bottom: 32),
             children: [
-              Container(
-                color: NasaColors.pitch,
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
-                child: Row(
-                  children: [
-                    InitialsAvatar(
-                        text: team.name,
-                        radius: 30,
-                        background: Colors.white,
-                        foreground: NasaColors.pitch),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(team.name,
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 18)),
-                          const SizedBox(height: 4),
-                          Text('${team.wardName} · Founded ${team.foundedYear}',
-                              style: const TextStyle(
-                                  color: Colors.white70, fontSize: 12.5)),
-                          const SizedBox(height: 4),
-                          Text('Coach: ${team.coachName}',
-                              style: const TextStyle(
-                                  color: Colors.white70, fontSize: 12.5)),
-                          if (team.sponsorName != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: Text('Sponsor: ${team.sponsorName}',
-                                  style: const TextStyle(
-                                      color: NasaColors.sun,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w700)),
-                            ),
-                        ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: NasaColors.bgCard,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: NasaColors.border),
+                  ),
+                  child: Row(
+                    children: [
+                      InitialsAvatar(
+                          text: team.name,
+                          radius: 30,
+                          background: const Color(0xFF1E3A8A).withValues(alpha: 0.5),
+                          foreground: const Color(0xFF60A5FA),
+                          imageUrl: team.logoUrl),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(team.name,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 18)),
+                            const SizedBox(height: 4),
+                            Text('${team.wardName} · Founded ${team.foundedYear}',
+                                style: const TextStyle(
+                                    color: NasaColors.textMuted, fontSize: 13)),
+                            const SizedBox(height: 4),
+                            Text('Coach: ${team.coachName}',
+                                style: const TextStyle(
+                                    color: NasaColors.textMuted, fontSize: 13)),
+                            if (team.sponsorName != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text('Sponsor: ${team.sponsorName}',
+                                    style: const TextStyle(
+                                        color: NasaColors.gold,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700)),
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               Container(
-                margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: NasaColors.bgCard,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: NasaColors.line),
+                  border: Border.all(color: NasaColors.border),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -101,7 +109,7 @@ class TeamProfileScreen extends StatelessWidget {
               ),
               const SectionHeader(title: 'Squad'),
               ...roster.map((p) => ListTile(
-                    leading: InitialsAvatar(text: p.name, radius: 18),
+                    leading: InitialsAvatar(text: p.name, radius: 18, imageUrl: p.imageUrl),
                     title: Text(p.name),
                     subtitle: Text(
                         '#${p.jerseyNumber} · ${p.position} · ${p.goals} goals'),

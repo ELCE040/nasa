@@ -3,6 +3,7 @@ import '../../state/app_state.dart';
 import '../../theme/app_theme.dart';
 import '../viewer/events_screen.dart';
 import 'disciplinary_log_screen.dart';
+import '../viewer/sponsorship_screen.dart';
 
 class TeamMoreTab extends StatelessWidget {
   const TeamMoreTab({super.key});
@@ -10,6 +11,7 @@ class TeamMoreTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = AppState.instance;
+    final brandPrimary = Theme.of(context).colorScheme.primary;
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -36,6 +38,15 @@ class TeamMoreTab extends StatelessWidget {
             MaterialPageRoute(builder: (_) => const EventsScreen()),
           ),
         ),
+        _MenuTile(
+          icon: Icons.storefront_outlined,
+          title: 'Sponsor a team',
+          subtitle: 'Support local football and get business visibility',
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SponsorshipScreen()),
+          ),
+        ),
         const SizedBox(height: 20),
         const Text(
           'Account',
@@ -52,7 +63,7 @@ class TeamMoreTab extends StatelessWidget {
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 4),
           child: Text(
-            'Nasa Sport - Team & coach edition. Demo build, all data illustrative. Escrow and SMS/mobile-money flows are simulated.',
+            'Naysasport - Team & coach edition.',
             style:
                 TextStyle(fontSize: 11, color: NasaColors.slate, height: 1.3),
           ),
@@ -80,26 +91,30 @@ class _MenuTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: NasaColors.bgCard,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: NasaColors.line),
+        border: Border.all(color: NasaColors.border),
       ),
       child: ListTile(
         leading: Container(
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: NasaColors.pitch.withValues(alpha: 0.1),
+            color: brandPrimary.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: NasaColors.pitch, size: 20),
+          child: Icon(icon, color: brandPrimary, size: 20),
         ),
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
+          style: const TextStyle(
+              fontWeight: FontWeight.w800, fontSize: 13.5, color: Colors.white),
         ),
-        subtitle: Text(subtitle, style: const TextStyle(fontSize: 11.5)),
-        trailing: const Icon(Icons.chevron_right),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(fontSize: 11.5, color: NasaColors.textMuted),
+        ),
+        trailing: const Icon(Icons.chevron_right, color: NasaColors.textMuted),
         onTap: onTap,
       ),
     );

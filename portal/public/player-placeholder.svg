@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title id="title">Player photo placeholder</title>
+  <rect width="240" height="240" fill="#0E3357"/>
+  <circle cx="120" cy="88" r="42" fill="#8BA3B8" opacity=".75"/>
+  <path d="M42 222c10-50 40-76 78-76s68 26 78 76" fill="#8BA3B8" opacity=".75"/>
+  <text x="120" y="222" text-anchor="middle" fill="#D2B059" font-family="Arial, sans-serif" font-size="14" font-weight="700">NO PHOTO</text>
+</svg>

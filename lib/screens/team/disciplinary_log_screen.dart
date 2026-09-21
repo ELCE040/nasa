@@ -23,6 +23,7 @@ class DisciplinaryLogScreen extends StatelessWidget {
             actions: const [RoleSwitcherButton()],
           ),
           floatingActionButton: FloatingActionButton(
+            heroTag: 'fab_disciplinary',
             child: const Icon(Icons.add),
             onPressed: () => _showAddDialog(context, roster),
           ),

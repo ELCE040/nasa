@@ -12,55 +12,29 @@ class SponsorshipScreen extends StatelessWidget {
     final app = AppState.instance;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sponsor a team'),
+        title: const Text('Sponsors'),
         actions: const [RoleSwitcherButton()],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'fab_sponsorship',
         icon: const Icon(Icons.volunteer_activism_outlined),
-        label: const Text('Sponsor now'),
-        onPressed: () => _showSponsorSheet(context),
+        label: const Text('Become a sponsor'),
+        onPressed: () => _showContactDialog(context),
       ),
       body: AnimatedBuilder(
         animation: app,
         builder: (context, _) {
-          final total =
-              app.sponsorships.fold<double>(0, (s, x) => s + x.amountMwk);
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 90),
             children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: NasaColors.pitch,
-                  borderRadius: BorderRadius.circular(16),
+              const Text('Our Sponsors',
+                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.white)),
+              const SizedBox(height: 16),
+              if (app.sponsorships.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text('No sponsors yet. Be the first!', style: TextStyle(color: NasaColors.textMuted)),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Raised across the league',
-                        style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 6),
-                    Text(formatMwk(total),
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 26,
-                            fontWeight: FontWeight.w800)),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'Adopt a team, fund a tournament prize pool, or sponsor kits — from Malawi or the diaspora.',
-                      style: TextStyle(
-                          color: Colors.white70, fontSize: 12, height: 1.3),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-              const Text('Recent sponsors',
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
-              const SizedBox(height: 10),
               ...app.sponsorships.map((s) {
                 final typeLabel = switch (s.type) {
                   SponsorshipType.teamAdoption => 'Team adoption',
@@ -71,9 +45,9 @@ class SponsorshipScreen extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 10),
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: NasaColors.bgCard,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: NasaColors.line),
+                    border: Border.all(color: NasaColors.border),
                   ),
                   child: Row(
                     children: [
@@ -86,33 +60,29 @@ class SponsorshipScreen extends StatelessWidget {
                                 Expanded(
                                     child: Text(s.sponsorName,
                                         style: const TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 13.5))),
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 15, color: Colors.white))),
                                 if (s.isDiaspora)
                                   const StatusChip(
-                                      label: 'Diaspora', color: NasaColors.sun),
+                                      label: 'Diaspora', color: NasaColors.gold),
                               ],
                             ),
                             const SizedBox(height: 2),
                             Text('$typeLabel · ${s.targetName}',
                                 style: const TextStyle(
-                                    fontSize: 11.5, color: NasaColors.slate)),
+                                    fontSize: 12.5, color: NasaColors.textMuted)),
                             if (s.message.isNotEmpty)
                               Padding(
                                 padding: const EdgeInsets.only(top: 4),
                                 child: Text('"${s.message}"',
                                     style: const TextStyle(
-                                        fontSize: 11.5,
+                                        fontSize: 12.5,
                                         fontStyle: FontStyle.italic,
-                                        color: NasaColors.slate)),
+                                        color: NasaColors.textMain)),
                               ),
                           ],
                         ),
                       ),
-                      Text(formatMwk(s.amountMwk),
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                              color: NasaColors.pitch)),
                     ],
                   ),
                 );
@@ -124,115 +94,22 @@ class SponsorshipScreen extends StatelessWidget {
     );
   }
 
-  void _showSponsorSheet(BuildContext context) {
-    final app = AppState.instance;
-    final nameCtrl = TextEditingController();
-    final amountCtrl = TextEditingController();
-    final messageCtrl = TextEditingController();
-    SponsorshipType type = SponsorshipType.teamAdoption;
-    String target = app.teams.first.name;
-    bool isDiaspora = false;
-
-    showModalBottomSheet(
+  void _showContactDialog(BuildContext context) {
+    showDialog(
       context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setState) => Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 20,
-            bottom: 20 + MediaQuery.of(ctx).viewInsets.bottom,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Become a sponsor'),
+        content: const Text(
+            'If you would like to sponsor a team or the league, please contact us at:\n\n'
+            'Email: contact@naysasport.com\n'
+            'Phone: +265 99 123 4567\n\n'
+            'We appreciate your support!'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Close'),
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Sponsor a team or tournament',
-                    style:
-                        TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                const SizedBox(height: 14),
-                TextField(
-                    controller: nameCtrl,
-                    decoration: const InputDecoration(
-                        labelText: 'Your name / organisation')),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<SponsorshipType>(
-                  initialValue: type,
-                  decoration:
-                      const InputDecoration(labelText: 'Sponsorship type'),
-                  items: const [
-                    DropdownMenuItem(
-                        value: SponsorshipType.teamAdoption,
-                        child: Text('Adopt a team')),
-                    DropdownMenuItem(
-                        value: SponsorshipType.tournamentPrizePool,
-                        child: Text('Tournament prize pool')),
-                    DropdownMenuItem(
-                        value: SponsorshipType.kitSponsorship,
-                        child: Text('Kit sponsorship')),
-                  ],
-                  onChanged: (v) => setState(() => type = v ?? type),
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  initialValue: target,
-                  decoration:
-                      const InputDecoration(labelText: 'Team / tournament'),
-                  items: app.teams
-                      .map((t) =>
-                          DropdownMenuItem(value: t.name, child: Text(t.name)))
-                      .toList(),
-                  onChanged: (v) => setState(() => target = v ?? target),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: amountCtrl,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                      labelText: 'Amount (MWK)', prefixText: 'MWK '),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                    controller: messageCtrl,
-                    decoration:
-                        const InputDecoration(labelText: 'Message (optional)')),
-                const SizedBox(height: 8),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  value: isDiaspora,
-                  title: const Text('Sending from the diaspora?'),
-                  onChanged: (v) => setState(() => isDiaspora = v),
-                ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final amount = double.tryParse(amountCtrl.text) ?? 0;
-                      if (nameCtrl.text.trim().isEmpty || amount <= 0) return;
-                      app.addSponsorship(
-                        sponsorName: nameCtrl.text.trim(),
-                        isDiaspora: isDiaspora,
-                        type: type,
-                        targetName: target,
-                        amountMwk: amount,
-                        message: messageCtrl.text.trim(),
-                      );
-                      Navigator.pop(ctx);
-                      showNasaSnack(context,
-                          'Thank you! Mobile money payment simulated and recorded on the public ledger.');
-                    },
-                    child: const Text('Confirm sponsorship'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        ],
       ),
     );
   }
