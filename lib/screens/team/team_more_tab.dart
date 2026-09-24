@@ -11,7 +11,6 @@ class TeamMoreTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = AppState.instance;
-    final brandPrimary = Theme.of(context).colorScheme.primary;
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -88,6 +87,7 @@ class _MenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brandPrimary = Theme.of(context).colorScheme.primary;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(

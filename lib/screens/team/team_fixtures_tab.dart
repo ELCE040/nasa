@@ -80,13 +80,13 @@ class TeamFixturesTab extends StatelessWidget {
                                   const LiveBadge(),
                                   const SizedBox(width: 5),
                                   Text('${m.minute}\'',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           color: brandPrimary,
                                           fontSize: 11,
                                           fontWeight: FontWeight.w900)),
                                 ],
                                 if (m.status == MatchStatus.postponed)
-                                  const StatusChip(
+                                  StatusChip(
                                       label: 'Postponed', color: brandPrimary),
                                 if (m.status == MatchStatus.fullTime)
                                   const StatusChip(
@@ -129,7 +129,7 @@ class TeamFixturesTab extends StatelessWidget {
                                             m.status == MatchStatus.postponed
                                         ? 'vs'
                                         : '${m.homeScore} - ${m.awayScore}',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                         fontWeight: FontWeight.w900,
                                         fontSize: 15,
                                         color: brandSecondary),
@@ -170,13 +170,13 @@ class TeamFixturesTab extends StatelessWidget {
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton.icon(
-                                icon: const Icon(Icons.groups_outlined,
+                                icon: Icon(Icons.groups_outlined,
                                     size: 17, color: brandPrimary),
                                 label: Text(
                                   app.fixtureLineups.containsKey(m.id)
                                       ? 'Edit fixture XI'
                                       : 'Set fixture XI',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       color: brandPrimary,
                                       fontWeight: FontWeight.w800),
                                 ),

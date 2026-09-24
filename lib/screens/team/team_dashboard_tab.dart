@@ -52,7 +52,7 @@ class _TeamDashboardTabState extends State<TeamDashboardTab> {
                 onEdit: () => _changeLogo(team)),
             const SizedBox(height: 18),
             _CompetitionCard(team: team, app: app),
-            if (team.leagueId.isNotEmpty) ...[
+            if (app.teamLeagueStandings.isNotEmpty) ...[
               const SectionHeader(title: 'League position'),
               _CompactStandings(team: team, app: app),
             ],
@@ -288,9 +288,7 @@ class _CompactStandings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final standings = app.teamLeagueStandings
-        .where((standing) => standing.leagueId == team.leagueId)
-        .toList();
+    final standings = List<Team>.from(app.teamLeagueStandings);
     final teamIndex =
         standings.indexWhere((standing) => standing.id == team.id);
 
@@ -491,7 +489,7 @@ class _MatchTile extends StatelessWidget {
                 ),
                 child: Text(
                     isResult ? '${match.homeScore} - ${match.awayScore}' : 'vs',
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 14,
                         color: Theme.of(context).colorScheme.secondary)),
