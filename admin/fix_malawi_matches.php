@@ -6,18 +6,18 @@ header('Content-Type: application/json');
 
 try {
     // 1. Differentiate the teams
-    // Team t178973490397122 -> MALAWI U-20
-    $pdo->prepare("UPDATE teams SET name = 'MALAWI U-20', ageGroup = 'U-20', leagueId = 'l6aad2eb551ec2' WHERE id = 't178973490397122'")->execute();
+    // Team t178973490397122 -> MALAWI U-20 in CAF U-20 (GROUP C)
+    $pdo->prepare("UPDATE teams SET name = 'MALAWI U-20', ageGroup = 'U-20', leagueId = 'l6aad2eb551ec2', leagueName = 'CAF U-20 AFRICAN CUP OF NATION Q', groupName = 'GROUP C' WHERE id = 't178973490397122'")->execute();
     $pdo->prepare("UPDATE players SET teamName = 'MALAWI U-20' WHERE teamId = 't178973490397122'")->execute();
     $pdo->prepare("UPDATE matches SET homeTeamName = 'MALAWI U-20' WHERE homeTeamId = 't178973490397122' AND leagueId = 'l6aad2eb551ec2'")->execute();
     $pdo->prepare("UPDATE matches SET awayTeamName = 'MALAWI U-20' WHERE awayTeamId = 't178973490397122' AND leagueId = 'l6aad2eb551ec2'")->execute();
 
-    // Team t179034682757713 -> MALAWI (Senior)
-    $pdo->prepare("UPDATE teams SET ageGroup = 'Senior' WHERE id = 't179034682757713'")->execute();
+    // Team t179034682757713 -> MALAWI Senior in AFCON 2027 (GROUP B)
+    $pdo->prepare("UPDATE teams SET name = 'MALAWI', ageGroup = 'Senior', leagueId = 'l6ab63b8dddb11', leagueName = 'AFCON 2027 PAMOJA QUALIFIERS - GROUP B', groupName = 'GROUP B' WHERE id = 't179034682757713'")->execute();
 
     // 2. Fix the played match m6ab65b382c409 (MALAWI vs SOUTH SUDAN, 2-1 FT)
-    // Update homeTeamId from U-20 (t178973490397122) to Senior (t179034682757713)
-    $pdo->prepare("UPDATE matches SET homeTeamId = 't179034682757713', homeTeamName = 'MALAWI' WHERE id = 'm6ab65b382c409'")->execute();
+    // Update homeTeamId to Senior (t179034682757713) and set group to GROUP B
+    $pdo->prepare("UPDATE matches SET homeTeamId = 't179034682757713', homeTeamName = 'MALAWI', groupName = 'GROUP B', leagueId = 'l6ab63b8dddb11' WHERE id = 'm6ab65b382c409'")->execute();
 
     // 3. Move any lineup recorded for the duplicate m6ab687cdb0a39 to m6ab65b382c409
     $stmt = $pdo->prepare("SELECT playerIds, formation FROM team_lineups WHERE matchId = 'm6ab687cdb0a39'");
