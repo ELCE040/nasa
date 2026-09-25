@@ -152,6 +152,18 @@ pool.query('SHOW COLUMNS FROM teams LIKE "groupName"').then(([rows]) => {
   }
 }).catch(error => console.error('Unable to add teams.groupName:', error.message));
 
+pool.query('SHOW COLUMNS FROM teams LIKE "ageGroup"').then(([rows]) => {
+  if (!rows.length) {
+    return pool.query('ALTER TABLE teams ADD COLUMN ageGroup VARCHAR(50) DEFAULT NULL');
+  }
+}).catch(error => console.error('Unable to add teams.ageGroup:', error.message));
+
+pool.query('SHOW COLUMNS FROM team_registrations LIKE "ageGroup"').then(([rows]) => {
+  if (!rows.length) {
+    return pool.query('ALTER TABLE team_registrations ADD COLUMN ageGroup VARCHAR(50) DEFAULT NULL');
+  }
+}).catch(error => console.error('Unable to add team_registrations.ageGroup:', error.message));
+
 pool.query('SHOW COLUMNS FROM teams LIKE "dashboardOnly"').then(([rows]) => {
   if (!rows.length) return pool.query('ALTER TABLE teams ADD COLUMN dashboardOnly TINYINT(1) NOT NULL DEFAULT 0');
 }).catch(error => console.error('Unable to add teams.dashboardOnly:', error.message));
@@ -189,6 +201,18 @@ pool.query('SHOW COLUMNS FROM leagues LIKE "status"').then(([rows]) => {
   }
 }).catch(error => console.error('Unable to add leagues.status:', error.message));
 
+pool.query('SHOW COLUMNS FROM leagues LIKE "logoUrl"').then(([rows]) => {
+  if (!rows.length) return pool.query('ALTER TABLE leagues ADD COLUMN logoUrl TEXT NULL');
+}).catch(error => console.error('Unable to add leagues.logoUrl:', error.message));
+
+pool.query('SHOW COLUMNS FROM leagues LIKE "startDate"').then(([rows]) => {
+  if (!rows.length) return pool.query('ALTER TABLE leagues ADD COLUMN startDate DATE NULL');
+}).catch(error => console.error('Unable to add leagues.startDate:', error.message));
+
+pool.query('SHOW COLUMNS FROM leagues LIKE "endDate"').then(([rows]) => {
+  if (!rows.length) return pool.query('ALTER TABLE leagues ADD COLUMN endDate DATE NULL');
+}).catch(error => console.error('Unable to add leagues.endDate:', error.message));
+
 // Sync matches competition name with leagueName if generic
 pool.query("UPDATE matches SET competition = leagueName WHERE leagueName IS NOT NULL AND leagueName != '' AND (competition = 'NAYSA League' OR competition = '' OR competition IS NULL)").catch(err => console.error('Unable to sync match competition names:', err.message));
 
@@ -222,17 +246,17 @@ pool.query('SHOW COLUMNS FROM matches LIKE "liveStartedAt"').then(([rows]) => {
   if (!rows.length) return pool.query('ALTER TABLE matches ADD COLUMN liveStartedAt DATETIME NULL');
 }).catch(error => console.error('Unable to add matches.liveStartedAt:', error.message));
 
+pool.query('SHOW COLUMNS FROM matches LIKE "autoTickEnabled"').then(([rows]) => {
+  if (!rows.length) return pool.query('ALTER TABLE matches ADD COLUMN autoTickEnabled TINYINT(1) NOT NULL DEFAULT 0');
+}).catch(error => console.error('Unable to add matches.autoTickEnabled:', error.message));
+
+pool.query('SHOW COLUMNS FROM matches LIKE "autoTickLastAt"').then(([rows]) => {
+  if (!rows.length) return pool.query('ALTER TABLE matches ADD COLUMN autoTickLastAt DATETIME NULL');
+}).catch(error => console.error('Unable to add matches.autoTickLastAt:', error.message));
+
 async function syncLiveMatchMinutes(pool) {
-  try {
-    // Preserve a minute already recorded before server-authoritative timing
-    // was introduced: minute 50 means the clock began 50 minutes ago.
-    await pool.query("UPDATE matches SET liveStartedAt=DATE_SUB(NOW(), INTERVAL minute MINUTE) WHERE status='live' AND liveStartedAt IS NULL");
-    await pool.query(`UPDATE matches
-      SET minute = LEAST(120, GREATEST(0, TIMESTAMPDIFF(MINUTE, liveStartedAt, NOW())))
-      WHERE status='live' AND liveStartedAt IS NOT NULL`);
-  } catch (error) {
-    console.error('Unable to synchronize live match minutes:', error.message);
-  }
+  // Minutes are advanced by the admin ticker endpoint. Do not derive them
+  // from wall-clock time, otherwise the clock continues while the ticker is off.
 }
 
 pool.query(`CREATE TABLE IF NOT EXISTS match_events (
@@ -638,7 +662,7 @@ app.get('/backend/api/app-data', async (req, res) => {
       [teamCompetitions],
       [teamSquadMembers],
     ] = await Promise.all([
-      pool.query('SELECT id, name, wardId, wardName, leagueId, leagueName, foundedYear, coachName, sponsorName, groupName, logoUrl, played, won, drawn, lost, goalsFor, goalsAgainst, IFNULL(teamType, "club") AS teamType FROM teams WHERE dashboardOnly = 0 AND (isExternal = 0 OR isExternal IS NULL)'),
+      pool.query('SELECT id, name, wardId, wardName, leagueId, leagueName, ageGroup, foundedYear, coachName, sponsorName, groupName, logoUrl, played, won, drawn, lost, goalsFor, goalsAgainst, IFNULL(teamType, "club") AS teamType FROM teams WHERE dashboardOnly = 0 AND (isExternal = 0 OR isExternal IS NULL)'),
       pool.query('SELECT p.id, p.name, p.age, p.position, p.teamId, p.teamName, p.wardName, p.jerseyNumber, p.preferredFoot, p.heightM, p.goals, p.assists, p.appearances, p.cleanSheets, p.yellowCards, p.redCards, IFNULL(p.clubStatus, "club") AS clubStatus FROM players p LEFT JOIN teams t ON t.id = p.teamId WHERE t.id IS NULL OR (t.dashboardOnly = 0 AND (t.isExternal = 0 OR t.isExternal IS NULL))'),
       pool.query('SELECT m.* FROM matches m JOIN teams h ON h.id=m.homeTeamId JOIN teams a ON a.id=m.awayTeamId WHERE h.dashboardOnly=0 AND a.dashboardOnly=0 AND (h.isExternal=0 OR h.isExternal IS NULL) AND (a.isExternal=0 OR a.isExternal IS NULL) AND (m.isPrivate=0 OR m.isPrivate IS NULL) ORDER BY m.kickoff DESC LIMIT 100'),
       pool.query('SELECT * FROM leagues ORDER BY name'),
@@ -790,13 +814,33 @@ app.get('/backend/api/team-workspace', requireTeamSession, async (req, res) => {
     const team = teamRows[0];
     let competitionStatus = null;
     let competitionStandings = [];
-    if (team.leagueId) {
+    const teamCompetitionIds = [...new Set(
+      matches.map(match => match.leagueId).filter(Boolean),
+    )];
+    if (team.leagueId && !teamCompetitionIds.includes(team.leagueId)) {
+      teamCompetitionIds.push(team.leagueId);
+    }
+    if (teamCompetitionIds.length) {
+      const placeholders = teamCompetitionIds.map(() => '?').join(',');
       const [[leagueRows], liveData] = await Promise.all([
-        pool.query('SELECT name, format FROM leagues WHERE id = ?', [team.leagueId]),
+        pool.query(
+          `SELECT id, name, format, status FROM leagues WHERE id IN (${placeholders})`,
+          teamCompetitionIds,
+        ),
         calculateLeagueLiveData(),
       ]);
-      const league = leagueRows[0] || { name: team.leagueName || 'Competition', format: 'league' };
-      const competitionMatches = matches.filter(match => match.leagueId === team.leagueId);
+      const leaguesById = new Map(leagueRows.map(league => [league.id, league]));
+      const activeCompetitionMatches = matches
+        .filter(match => leaguesById.get(match.leagueId)?.status === 'active')
+        .sort((a, b) => new Date(b.kickoff) - new Date(a.kickoff));
+      const latestCompetitionId = (activeCompetitionMatches[0]?.leagueId ||
+        matches.find(match => leaguesById.has(match.leagueId))?.leagueId ||
+        team.leagueId);
+      const league = leaguesById.get(latestCompetitionId) || {
+        name: team.leagueName || 'Competition',
+        format: 'league',
+      };
+      const competitionMatches = matches.filter(match => match.leagueId === latestCompetitionId);
       const upcoming = competitionMatches
         .filter(match => match.status === 'upcoming')
         .sort((a, b) => new Date(a.kickoff) - new Date(b.kickoff))[0];
@@ -808,7 +852,7 @@ app.get('/backend/api/team-workspace', requireTeamSession, async (req, res) => {
         ((latestKnockout.homeTeamId === teamId && Number(latestKnockout.homeScore) < Number(latestKnockout.awayScore)) ||
          (latestKnockout.awayTeamId === teamId && Number(latestKnockout.awayScore) < Number(latestKnockout.homeScore)));
       const knockoutActive = league.format === 'knockout' || (league.format === 'group_knockout' && Boolean(latestKnockout));
-      const table = liveData.standings.filter(row => row.leagueId === team.leagueId);
+      const table = liveData.standings.filter(row => row.leagueId === latestCompetitionId);
       competitionStandings = table;
       const position = table.findIndex(row => row.id === teamId) + 1;
       const eliminated = Boolean(knockoutActive && lostLatestKnockout && !upcoming);
@@ -931,8 +975,8 @@ app.get('/backend/api/teams', async (req, res) => {
   try {
     const includeAll = req.query.includeAll === 'true' || req.query.all === 'true';
     const [rows] = await pool.query(
-      `SELECT id, name, wardId, wardName, leagueId, leagueName, foundedYear,
-              coachName, sponsorName, groupName, logoUrl, dashboardOnly, isExternal, IFNULL(teamType, 'club') AS teamType,
+            `SELECT id, name, wardId, wardName, leagueId, leagueName, foundedYear,
+              coachName, sponsorName, ageGroup, groupName, logoUrl, dashboardOnly, isExternal, IFNULL(teamType, 'club') AS teamType,
               played, won, drawn, lost, goalsFor, goalsAgainst
        FROM teams ${includeAll ? '' : 'WHERE dashboardOnly = 0 AND (isExternal = 0 OR isExternal IS NULL)'}`
     );
@@ -989,7 +1033,7 @@ app.get('/backend/api/players/:id/stats-by-competition', async (req, res) => {
 app.get('/backend/api/leagues', async (req, res) => {
   try {
     const includeCompleted = req.query.includeCompleted === 'true' || req.query.all === 'true';
-    const [rows] = await pool.query('SELECT * FROM leagues ORDER BY name');
+    const [rows] = await pool.query('SELECT * FROM leagues ORDER BY startDate IS NULL, startDate DESC, name ASC');
 
     // 1. Check for knockout/cup competitions that have a finished final
     let completedLeagueIds = new Set();
@@ -1045,16 +1089,16 @@ app.get('/backend/api/leagues', async (req, res) => {
 
 app.post('/backend/api/leagues', async (req, res) => {
   try {
-    const { id, name, description, format, advancingTeams } = req.body;
-    await pool.query('INSERT INTO leagues (id, name, description, format, advancingTeams) VALUES (?,?,?,?,?)', [id, name, description || null, format || 'league', Math.max(1, Number(advancingTeams) || 2)]);
+    const { id, name, description, format, advancingTeams, logoUrl, startDate, endDate } = req.body;
+    await pool.query('INSERT INTO leagues (id, name, description, format, advancingTeams, logoUrl, startDate, endDate) VALUES (?,?,?,?,?,?,?,?)', [id, name, description || null, format || 'league', Math.max(1, Number(advancingTeams) || 2), logoUrl || null, startDate || null, endDate || null]);
     res.status(201).json({ id });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 app.put('/backend/api/leagues/:id', async (req, res) => {
   try {
-    const { name, description, format, advancingTeams } = req.body;
-    await pool.query('UPDATE leagues SET name=?, description=?, format=?, advancingTeams=? WHERE id=?', [name, description || null, format || 'league', Math.max(1, Number(advancingTeams) || 2), req.params.id]);
+    const { name, description, format, advancingTeams, logoUrl, startDate, endDate } = req.body;
+    await pool.query('UPDATE leagues SET name=?, description=?, format=?, advancingTeams=?, logoUrl=?, startDate=?, endDate=? WHERE id=?', [name, description || null, format || 'league', Math.max(1, Number(advancingTeams) || 2), logoUrl || null, startDate || null, endDate || null, req.params.id]);
     res.json({ updated: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -1082,12 +1126,14 @@ app.get(['/backend/api/teams/:id', '/api/teams/:id'], async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-async function findDuplicateTeam(name, excludeId = null) {
+async function findDuplicateTeam(name, ageGroup = null, excludeId = null) {
   const [rows] = await pool.query(
     `SELECT id, name FROM teams
-     WHERE LOWER(TRIM(name)) = LOWER(TRIM(?)) ${excludeId ? 'AND id <> ?' : ''}
+     WHERE LOWER(TRIM(name)) = LOWER(TRIM(?))
+       AND LOWER(TRIM(COALESCE(ageGroup, ''))) = LOWER(TRIM(COALESCE(?, '')))
+       ${excludeId ? 'AND id <> ?' : ''}
      LIMIT 1`,
-    excludeId ? [name, excludeId] : [name]
+    excludeId ? [name, ageGroup, excludeId] : [name, ageGroup]
   );
   return rows[0] || null;
 }
@@ -1104,26 +1150,40 @@ async function findDuplicatePlayer(name, teamId, excludeId = null) {
 
 app.post('/backend/api/teams', async (req, res) => {
   try {
-    const { id, name, wardId, wardName, leagueId, leagueName, foundedYear, coachName, sponsorName, groupName, logoUrl, dashboardOnly, isExternal } = req.body;
-    const duplicate = await findDuplicateTeam(name);
-    if (duplicate) return res.status(409).json({ error: `A team named "${duplicate.name}" already exists.`, duplicateId: duplicate.id });
+    const { id, name, wardId, wardName, leagueId, leagueName, foundedYear, coachName, sponsorName, ageGroup, groupName, logoUrl, dashboardOnly, isExternal } = req.body;
+    const duplicate = await findDuplicateTeam(name, ageGroup);
+    if (duplicate) return res.status(409).json({ error: `A team named "${duplicate.name}" already exists in the ${ageGroup || 'same'} age group.`, duplicateId: duplicate.id });
     await pool.query(
-      'INSERT INTO teams (id, name, wardId, wardName, leagueId, leagueName, foundedYear, coachName, sponsorName, groupName, logoUrl, dashboardOnly, isExternal) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
-      [id, name, wardId, wardName, leagueId || null, leagueName || null, foundedYear, coachName, sponsorName, groupName || null, logoUrl || null, Number(dashboardOnly) === 1 ? 1 : 0, Number(isExternal) === 1 ? 1 : 0]
+      'INSERT INTO teams (id, name, wardId, wardName, leagueId, leagueName, foundedYear, coachName, sponsorName, ageGroup, groupName, logoUrl, dashboardOnly, isExternal) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      [id, name, wardId, wardName, leagueId || null, leagueName || null, foundedYear, coachName, sponsorName, ageGroup || null, groupName || null, logoUrl || null, Number(dashboardOnly) === 1 ? 1 : 0, Number(isExternal) === 1 ? 1 : 0]
     );
     res.status(201).json({ id });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+app.post(['/backend/api/teams/restore', '/api/teams/restore'], async (req, res) => {
+  try {
+    const { id, name, wardName } = req.body;
+    if (!id || !name) return res.status(400).json({ error: 'id and name are required' });
+    await pool.query(
+      `INSERT INTO teams (id, name, wardName, teamType)
+       VALUES (?, ?, ?, 'club')
+       ON DUPLICATE KEY UPDATE name=VALUES(name), wardName=VALUES(wardName)`,
+      [id, name, wardName || 'Blantyre']
+    );
+    res.json({ success: true, restored: { id, name } });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 app.put('/backend/api/teams/:id', async (req, res) => {
   try {
-    const { name, wardId, wardName, leagueId, leagueName, foundedYear, coachName, sponsorName, groupName, logoUrl, dashboardOnly, isExternal, played, won, drawn, lost, goalsFor, goalsAgainst } = req.body;
-    const duplicate = await findDuplicateTeam(name, req.params.id);
-    if (duplicate) return res.status(409).json({ error: `A team named "${duplicate.name}" already exists.`, duplicateId: duplicate.id });
+    const { name, wardId, wardName, leagueId, leagueName, foundedYear, coachName, sponsorName, ageGroup, groupName, logoUrl, dashboardOnly, isExternal, played, won, drawn, lost, goalsFor, goalsAgainst } = req.body;
+    const duplicate = await findDuplicateTeam(name, ageGroup, req.params.id);
+    if (duplicate) return res.status(409).json({ error: `A team named "${duplicate.name}" already exists in the ${ageGroup || 'same'} age group.`, duplicateId: duplicate.id });
     await pool.query(
-      `UPDATE teams SET name=?, wardId=?, wardName=?, leagueId=?, leagueName=?, foundedYear=?, coachName=?, sponsorName=?, groupName=?, logoUrl=?, dashboardOnly=?, isExternal=?,
+      `UPDATE teams SET name=?, wardId=?, wardName=?, leagueId=?, leagueName=?, foundedYear=?, coachName=?, sponsorName=?, ageGroup=?, groupName=?, logoUrl=?, dashboardOnly=?, isExternal=?,
        played=?, won=?, drawn=?, lost=?, goalsFor=?, goalsAgainst=? WHERE id=?`,
-      [name, wardId, wardName, leagueId || null, leagueName || null, foundedYear, coachName, sponsorName, groupName || null, logoUrl || null, Number(dashboardOnly) === 1 ? 1 : 0, Number(isExternal) === 1 ? 1 : 0, played, won, drawn, lost, goalsFor, goalsAgainst, req.params.id]
+      [name, wardId, wardName, leagueId || null, leagueName || null, foundedYear, coachName, sponsorName, ageGroup || null, groupName || null, logoUrl || null, Number(dashboardOnly) === 1 ? 1 : 0, Number(isExternal) === 1 ? 1 : 0, played, won, drawn, lost, goalsFor, goalsAgainst, req.params.id]
     );
     res.json({ updated: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -1713,10 +1773,18 @@ app.get('/backend/api/events', async (req, res) => {
 
 app.post('/backend/api/register', async (req, res) => {
   try {
-    const { teamName, wardName, coachName, leagueId, leagueName, phone } = req.body;
+    const { teamName, ageGroup, wardName, coachName, leagueId, leagueName, phone } = req.body;
 
     if (!teamName || !wardName || !coachName) {
       return res.status(400).json({ error: 'Team name, ward name, and coach name are required.' });
+    }
+
+    const duplicate = await findDuplicateTeam(teamName, ageGroup);
+    if (duplicate) {
+      return res.status(409).json({
+        error: `A team named "${duplicate.name}" already exists in the ${ageGroup || 'same'} age group.`,
+        duplicateId: duplicate.id,
+      });
     }
 
     // Ensure columns exist on teams table
@@ -1784,15 +1852,15 @@ app.post('/backend/api/register', async (req, res) => {
 
     // 1. Create team account immediately
     await pool.query(
-      'INSERT INTO teams (id, name, wardName, coachName, leagueId, leagueName, username, password) VALUES (?,?,?,?,?,?,?,?)',
-      [teamId, teamName.trim(), wardName.trim(), coachName.trim(), finalLeagueId, finalLeagueName, candidateUsername, password]
+      'INSERT INTO teams (id, name, ageGroup, wardName, coachName, leagueId, leagueName, username, password) VALUES (?,?,?,?,?,?,?,?,?)',
+      [teamId, teamName.trim(), ageGroup?.trim() || null, wardName.trim(), coachName.trim(), finalLeagueId, finalLeagueName, candidateUsername, password]
     );
 
     // 2. Save registration record as completed & approved for free
     const chargeId = `reg${Date.now()}`;
     await pool.query(
-      'INSERT INTO team_registrations (id, teamName, wardName, coachName, paymentReceiptRef, paymentStatus, status, requestDate) VALUES (?,?,?,?,?,"completed","approved", NOW())',
-      [chargeId, teamName.trim(), wardName.trim(), coachName.trim(), 'FREE-REG']
+      'INSERT INTO team_registrations (id, teamName, ageGroup, wardName, coachName, paymentReceiptRef, paymentStatus, status, requestDate) VALUES (?,?,?,?,?, ?,"completed","approved", NOW())',
+      [chargeId, teamName.trim(), ageGroup?.trim() || null, wardName.trim(), coachName.trim(), 'FREE-REG']
     );
 
     const token = signSession(teamId);
@@ -1804,6 +1872,7 @@ app.post('/backend/api/register', async (req, res) => {
       team: {
         id: teamId,
         name: teamName.trim(),
+        ageGroup: ageGroup?.trim() || null,
         wardName: wardName.trim(),
         coachName: coachName.trim(),
         leagueId: finalLeagueId,
@@ -2027,6 +2096,85 @@ app.get(['/api/active-users', '/backend/api/active-users'], async (req, res) => 
   } catch (err) {
     console.error('[ACTIVE USERS STATS ERROR]', err.message);
     res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// ── ONE-TIME FIX: Malawi Senior vs U-20 team ID correction ───────────────────
+// Run once via GET /backend/api/admin-fix-malawi then this endpoint can be removed.
+app.get('/backend/api/admin-fix-malawi', async (req, res) => {
+  try {
+    const log = [];
+
+    // 1. Played match m6ab65b382c409 (MALAWI 2-1 SOUTH SUDAN) used U-20 team ID.
+    //    Correct it to the Senior team t179034682757713.
+    const [r1] = await pool.query(
+      "UPDATE matches SET homeTeamId='t179034682757713', homeTeamName='MALAWI' WHERE id='m6ab65b382c409' AND homeTeamId='t178973490397122'"
+    );
+    log.push('Fix played match homeTeamId: affectedRows=' + r1.affectedRows);
+
+    // 2. Move any lineup saved for match m6ab687cdb0a39 over to m6ab65b382c409
+    const [[lineupRow]] = await pool.query(
+      "SELECT playerIds, formation FROM team_lineups WHERE teamId='t179034682757713' AND matchId='m6ab687cdb0a39' LIMIT 1"
+    );
+    if (lineupRow) {
+      await pool.query(
+        "INSERT INTO team_lineups (id, teamId, matchId, playerIds, formation) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE playerIds=VALUES(playerIds), formation=VALUES(formation)",
+        ['tl_fix_m6ab65b382c409', 't179034682757713', 'm6ab65b382c409', lineupRow.playerIds, lineupRow.formation || '4-4-2']
+      );
+      log.push('Moved lineup from m6ab687cdb0a39 to m6ab65b382c409');
+    } else {
+      // Also check if a default lineup exists for the Senior team
+      const [[defLine]] = await pool.query(
+        "SELECT playerIds, formation FROM team_lineups WHERE teamId='t179034682757713' AND matchId IS NULL LIMIT 1"
+      );
+      if (defLine) {
+        await pool.query(
+          "INSERT INTO team_lineups (id, teamId, matchId, playerIds, formation) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE playerIds=VALUES(playerIds)",
+          ['tl_fix_m6ab65b382c409', 't179034682757713', 'm6ab65b382c409', defLine.playerIds, defLine.formation || '4-4-2']
+        );
+        log.push('Copied default Senior lineup to match m6ab65b382c409');
+      } else {
+        log.push('No lineup found to move; will use fallback top-11');
+      }
+    }
+
+    // 3. Delete the duplicate upcoming fixture that used the Senior team ID
+    const [r3] = await pool.query("DELETE FROM matches WHERE id='m6ab687cdb0a39'");
+    await pool.query("DELETE FROM match_events WHERE matchId='m6ab687cdb0a39'");
+    await pool.query("DELETE FROM team_lineups WHERE matchId='m6ab687cdb0a39'");
+    log.push('Deleted duplicate upcoming fixture m6ab687cdb0a39: affectedRows=' + r3.affectedRows);
+
+    // 4. Remove duplicate AFCON fixtures that still used the old U-20 team ID
+    //    (the new ones with t179034682757713 are correct)
+    const dupsToRemove = ['m6ab64afd3aa7c', 'm6ab649c500dee', 'm6ab647f5a7bd0', 'm6ab64a4a4f306'];
+    for (const mid of dupsToRemove) {
+      const [rd] = await pool.query('DELETE FROM matches WHERE id=?', [mid]);
+      log.push(`Removed dup match ${mid}: ${rd.affectedRows} row(s)`);
+    }
+
+    // 5. Ensure Senior MALAWI is enrolled in AFCON 2027 league
+    await pool.query(
+      "INSERT IGNORE INTO team_competitions (id, teamId, leagueId, competitionRole, enrolledAt) VALUES (?, ?, ?, 'participant', NOW())",
+      ['tc_t179034682757713_l6ab63b8dddb11', 't179034682757713', 'l6ab63b8dddb11']
+    );
+    log.push('Ensured Senior MALAWI enrolled in AFCON 2027 league');
+
+    // 6. Rename t178973490397122 to MALAWI U-20 to avoid confusion
+    const [r6] = await pool.query(
+      "UPDATE teams SET name='MALAWI U-20', ageGroup='U-20' WHERE id='t178973490397122' AND name='MALAWI'"
+    );
+    log.push('Renamed U-20 team: affectedRows=' + r6.affectedRows);
+    if (r6.affectedRows > 0) {
+      await pool.query("UPDATE players SET teamName='MALAWI U-20' WHERE teamId='t178973490397122'");
+      await pool.query("UPDATE matches SET homeTeamName='MALAWI U-20' WHERE homeTeamId='t178973490397122'");
+      await pool.query("UPDATE matches SET awayTeamName='MALAWI U-20' WHERE awayTeamId='t178973490397122'");
+      log.push('Updated teamName to MALAWI U-20 across players and matches');
+    }
+
+    res.json({ ok: true, log });
+  } catch (e) {
+    console.error('[ADMIN FIX MALAWI]', e.message);
+    res.status(500).json({ ok: false, error: e.message });
   }
 });
 
