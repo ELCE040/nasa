@@ -85,18 +85,23 @@ try {
     // The admin falls back to stored stats when no match data exists.
     $pdo->prepare("UPDATE teams SET played=0, won=0, drawn=0, lost=0, goalsFor=0, goalsAgainst=0 WHERE id='t6ab021f30b022'")->execute();
 
-    // 10. ASCENT ACADEMY (t178979957206928) played a real 1-1 draw with MDF LIONESS
-    // but its leagueId is NULL. Enrol it in NBM Women's so it appears in standings properly.
-    $pdo->prepare("UPDATE teams SET leagueId='l6aae2aeb1789f', leagueName='NBM WOMEN,S PREMIERSHIP' WHERE id='t178979957206928'")->execute();
-    $pdo->prepare("INSERT IGNORE INTO team_competitions (id, teamId, leagueId, competitionRole, enrolledAt) VALUES (?, ?, ?, 'participant', NOW())")
-        ->execute(['tc_t178979957206928_l6aae2aeb1789f', 't178979957206928', 'l6aae2aeb1789f']);
+    // 10. MERGE ASCENT ACADEMY (t178979957206928) into ASCENT SOCCER ACADEMY (t6ab021f30b022)
+    // They are the same club. Reassign the 1-1 match vs MDF LIONESS to the correct team ID.
+    $pdo->prepare("UPDATE matches SET homeTeamId='t6ab021f30b022', homeTeamName='ASCENT SOCCER ACADEMY' WHERE homeTeamId='t178979957206928'")->execute();
+    $pdo->prepare("UPDATE matches SET awayTeamId='t6ab021f30b022', awayTeamName='ASCENT SOCCER ACADEMY' WHERE awayTeamId='t178979957206928'")->execute();
+    // Move any players, lineups, events
+    $pdo->prepare("UPDATE players SET teamId='t6ab021f30b022', teamName='ASCENT SOCCER ACADEMY' WHERE teamId='t178979957206928'")->execute();
+    $pdo->prepare("UPDATE team_lineups SET teamId='t6ab021f30b022' WHERE teamId='t178979957206928'")->execute();
+    $pdo->prepare("UPDATE match_events SET teamName='ASCENT SOCCER ACADEMY' WHERE teamName='ASCENT ACADEMY'")->execute();
+    // Remove from team_competitions and delete duplicate team record
+    $pdo->prepare("DELETE FROM team_competitions WHERE teamId='t178979957206928'")->execute();
+    $pdo->prepare("DELETE FROM teams WHERE id='t178979957206928'")->execute();
 
     echo json_encode([
         'ok' => true,
-        'message' => 'All fixes applied: Malawi teams, AFCON format, lineups, ghost team cleanup, ASCENT SOCCER ACADEMY stats cleared.'
+        'message' => 'All fixes applied: Malawi, AFCON format, lineups, NBM ghost teams, ASCENT ACADEMY merged into ASCENT SOCCER ACADEMY.'
     ]);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
 }
-
