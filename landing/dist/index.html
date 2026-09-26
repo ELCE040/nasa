@@ -3082,14 +3082,15 @@ function renderFixtures(matches) {
       const leagueInfo = getMatchLeagueInfo(m);
       const isPostponed = m.status === 'postponed';
       const kickoffDate = m.kickoff ? new Date(m.kickoff) : null;
-      const timeStr = kickoffDate && !isNaN(kickoffDate.getTime())
-        ? kickoffDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
-        : '';
+      const isTimeTbc = !kickoffDate || isNaN(kickoffDate.getTime()) || (kickoffDate.getHours() === 0 && kickoffDate.getMinutes() === 0);
+      const timeStr = isTimeTbc
+        ? 'TBC'
+        : kickoffDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
       const badge = isPostponed
         ? '<span class="match-badge" style="background:#f59e0b;color:#000;font-weight:800;">POSTPONED</span>'
-        : (timeStr
-            ? '<span class="match-badge" style="background:rgba(245,197,24,.15);color:var(--gold);font-weight:700;">' + sanitizeText(timeStr) + '</span>'
-            : '<span class="match-badge" style="background:rgba(255,255,255,.08);color:var(--text-muted);font-weight:600;">UPCOMING</span>');
+        : (isTimeTbc
+            ? '<span class="match-badge" style="background:rgba(255,255,255,.08);color:var(--text-muted);font-weight:700;">TBC</span>'
+            : '<span class="match-badge" style="background:rgba(245,197,24,.15);color:var(--gold);font-weight:700;">' + sanitizeText(timeStr) + '</span>');
 
       return '<div class="match-card-row fixture-card-row reveal stagger-' + ((cardIndex % 5) + 1) + '" onclick="openMatchDetails(\'' + sanitizeText(m.id) + '\')">' +
         '<div class="fixture-top-meta">' +

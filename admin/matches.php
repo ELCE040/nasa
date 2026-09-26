@@ -113,10 +113,22 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             ? ((int)$_POST['isPrivate'] === 1 ? 1 : 0)
             : ((!empty($home['isExternal']) || !empty($away['isExternal']) || !empty($home['dashboardOnly']) || !empty($away['dashboardOnly'])) ? 1 : 0);
 
+        $targetKickoff = null;
+        if (!empty($_POST['kickoff_is_tbc'])) {
+            if (!empty($_POST['kickoff_date'])) {
+                $targetKickoff = trim($_POST['kickoff_date']) . ' 00:00:00';
+            } else {
+                $targetKickoff = null;
+            }
+        } elseif (!empty($_POST['kickoff'])) {
+            $ko = trim($_POST['kickoff']);
+            $targetKickoff = (strtolower($ko) === 'tbc') ? null : $ko;
+        }
+
         $pdo->prepare('INSERT INTO matches (id,homeTeamId,awayTeamId,homeTeamName,awayTeamName,venue,wardName,competition,leagueId,leagueName,kickoff,status,travelDistanceKm,stage,groupName,isPrivate) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)')
           ->execute([$nid,$_POST['homeTeamId'],$_POST['awayTeamId'],$home['name']??'',$away['name']??'',
                  $_POST['venue'],$home['wardName']??'',$comp,$targetLeagueId,$targetLeagueName,
-                 $_POST['kickoff']?:null,$_POST['status']??'upcoming',(float)($_POST['travelDistanceKm']??0),
+                 $targetKickoff,$_POST['status']??'upcoming',(float)($_POST['travelDistanceKm']??0),
                  $stage, $groupName, $isPrivate]);
 
         if (!empty($targetLeagueId)) {
@@ -151,9 +163,21 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             $playerStmt->execute([$playerOfMatchId, $_POST['id'], $_POST['id']]);
             $playerOfMatchName = $playerStmt->fetchColumn() ?: null;
         }
+        $targetKickoff = null;
+        if (!empty($_POST['kickoff_is_tbc'])) {
+            if (!empty($_POST['kickoff_date'])) {
+                $targetKickoff = trim($_POST['kickoff_date']) . ' 00:00:00';
+            } else {
+                $targetKickoff = null;
+            }
+        } elseif (!empty($_POST['kickoff'])) {
+            $ko = trim($_POST['kickoff']);
+            $targetKickoff = (strtolower($ko) === 'tbc') ? null : $ko;
+        }
+
         $pdo->prepare('UPDATE matches SET status=?,homeScore=?,awayScore=?,venue=?,competition=?,leagueId=?,leagueName=?,kickoff=?,stage=?,groupName=?,isPrivate=?,playerOfMatchId=?,playerOfMatchName=? WHERE id=?')
           ->execute([$_POST['status'],(int)($_POST['homeScore']??0),(int)($_POST['awayScore']??0),
-                 $_POST['venue'],$comp,$targetLeagueId,$targetLeagueName,$_POST['kickoff']?:null,
+                 $_POST['venue'],$comp,$targetLeagueId,$targetLeagueName,$targetKickoff,
                  $stage,$groupName,$isPrivate,$playerOfMatchId ?: null,$playerOfMatchName,$_POST['id']]);
 
         if (!empty($targetLeagueId)) {
@@ -437,7 +461,22 @@ require __DIR__.'/header.php';
       <div class="form-group"><label>Group (Optional)</label>
         <input name="groupName" placeholder="e.g. Group A, Group B"/>
       </div>
-      <div class="form-group"><label>Kick-off Date & Time</label><input type="datetime-local" name="kickoff"/></div>
+      <div class="form-group">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <label style="margin:0;">Kick-off Date & Time</label>
+          <label style="font-size:12px;color:var(--gold);cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin:0;font-weight:700;">
+            <input type="checkbox" id="addKickoffTbc" name="kickoff_is_tbc" value="1" onchange="toggleKickoffTbcMode('add', this.checked)" style="width:auto;margin:0;cursor:pointer;">
+            Time is TBC
+          </label>
+        </div>
+        <div id="addKickoffDtWrap">
+          <input type="datetime-local" name="kickoff" id="addKickoffDt"/>
+        </div>
+        <div id="addKickoffDateWrap" style="display:none;">
+          <input type="date" name="kickoff_date" id="addKickoffDate"/>
+          <small style="color:var(--gold);display:block;margin-top:4px;">Date selected. Kick-off time will be saved as <strong>TBC</strong>. (Leave blank if entire fixture date is also TBC).</small>
+        </div>
+      </div>
       <div class="form-group"><label>Status</label>
         <select name="status"><?php foreach($statuses as $s): ?><option><?= $s ?></option><?php endforeach; ?></select>
       </div>
@@ -518,6 +557,26 @@ require __DIR__.'/header.php';
     if (pSel && isExt) pSel.value = '1';
   }
 
+  function toggleKickoffTbcMode(prefix, isTbc) {
+    const dtWrap = document.getElementById(prefix + 'KickoffDtWrap');
+    const dWrap = document.getElementById(prefix + 'KickoffDateWrap');
+    const dtInput = document.getElementById(prefix + 'KickoffDt');
+    const dInput = document.getElementById(prefix + 'KickoffDate');
+    if (isTbc) {
+      if (dtInput && dtInput.value) {
+        dInput.value = dtInput.value.split('T')[0];
+      }
+      if (dtWrap) dtWrap.style.display = 'none';
+      if (dWrap) dWrap.style.display = 'block';
+    } else {
+      if (dInput && dInput.value) {
+        dtInput.value = dInput.value + 'T15:00';
+      }
+      if (dtWrap) dtWrap.style.display = 'block';
+      if (dWrap) dWrap.style.display = 'none';
+    }
+  }
+
   // Validate form submission to ensure both teams are provided
   document.querySelector('form[method="post"]')?.addEventListener('submit', function(e) {
     if (this.querySelector('input[name="op"]')?.value !== 'create') return;
@@ -595,7 +654,38 @@ require __DIR__.'/header.php';
             <input type="hidden" name="leagueName" value="<?= e($match['leagueName']??'') ?>"/>
         <?php endif; ?>
       </div>
-      <div class="form-group"><label>Kick-off</label><input type="datetime-local" name="kickoff" value="<?= $match['kickoff'] ? date('Y-m-d\TH:i', strtotime($match['kickoff'])) : '' ?>"/></div>
+      <?php
+        $isKoTbc = false;
+        $koDtVal = '';
+        $koDateVal = '';
+        if (!empty($match['kickoff'])) {
+            $koTimeStr = date('H:i', strtotime($match['kickoff']));
+            $koDateVal = date('Y-m-d', strtotime($match['kickoff']));
+            if ($koTimeStr === '00:00') {
+                $isKoTbc = true;
+            } else {
+                $koDtVal = date('Y-m-d\TH:i', strtotime($match['kickoff']));
+            }
+        } else {
+            $isKoTbc = true;
+        }
+      ?>
+      <div class="form-group">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <label style="margin:0;">Kick-off Date & Time</label>
+          <label style="font-size:12px;color:var(--gold);cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin:0;font-weight:700;">
+            <input type="checkbox" id="editKickoffTbc" name="kickoff_is_tbc" value="1" <?= $isKoTbc ? 'checked' : '' ?> onchange="toggleKickoffTbcMode('edit', this.checked)" style="width:auto;margin:0;cursor:pointer;">
+            Time is TBC
+          </label>
+        </div>
+        <div id="editKickoffDtWrap" style="<?= $isKoTbc ? 'display:none;' : '' ?>">
+          <input type="datetime-local" name="kickoff" id="editKickoffDt" value="<?= e($koDtVal) ?>"/>
+        </div>
+        <div id="editKickoffDateWrap" style="<?= $isKoTbc ? '' : 'display:none;' ?>">
+          <input type="date" name="kickoff_date" id="editKickoffDate" value="<?= e($koDateVal) ?>"/>
+          <small style="color:var(--gold);display:block;margin-top:4px;">Date selected. Kick-off time will be saved as <strong>TBC</strong>. (Leave blank if entire fixture date is also TBC).</small>
+        </div>
+      </div>
       <div class="form-group" style="grid-column:1/-1;"><label>⭐ Player of the Match</label>
         <select name="playerOfMatchId" id="playerOfMatchId" <?= ($match['status']??'') !== 'fullTime' ? 'disabled' : '' ?>>
           <option value="">Select after the match is full time</option>
@@ -617,6 +707,25 @@ function togglePlayerOfMatch() {
   const status = document.getElementById('matchStatus');
   const award = document.getElementById('playerOfMatchId');
   if (status && award) award.disabled = status.value !== 'fullTime';
+}
+function toggleKickoffTbcMode(prefix, isTbc) {
+  const dtWrap = document.getElementById(prefix + 'KickoffDtWrap');
+  const dWrap = document.getElementById(prefix + 'KickoffDateWrap');
+  const dtInput = document.getElementById(prefix + 'KickoffDt');
+  const dInput = document.getElementById(prefix + 'KickoffDate');
+  if (isTbc) {
+    if (dtInput && dtInput.value) {
+      dInput.value = dtInput.value.split('T')[0];
+    }
+    if (dtWrap) dtWrap.style.display = 'none';
+    if (dWrap) dWrap.style.display = 'block';
+  } else {
+    if (dInput && dInput.value) {
+      dtInput.value = dInput.value + 'T15:00';
+    }
+    if (dtWrap) dtWrap.style.display = 'block';
+    if (dWrap) dWrap.style.display = 'none';
+  }
 }
 </script>
 
@@ -646,7 +755,17 @@ function togglePlayerOfMatch() {
         <small><?= e($m['competition']) ?></small>
         <?= !empty($m['isPrivate']) ? '<br><span class="badge" style="background:#f59e0b;color:#000;font-size:10px;font-weight:700">Private / External</span>' : '' ?>
       </td>
-      <td style="color:#8BA3B8"><small><?= $m['kickoff'] ? date('d M Y H:i', strtotime($m['kickoff'])) : 'TBD' ?></small></td>
+      <td style="color:#8BA3B8"><small>
+        <?php
+          if (!$m['kickoff']) {
+              echo '<span class="badge badge-gray" style="font-size:10px;">TBC</span>';
+          } elseif (date('H:i', strtotime($m['kickoff'])) === '00:00') {
+              echo date('d M Y', strtotime($m['kickoff'])) . ' <span class="badge badge-gray" style="font-size:10px;margin-left:3px;">TBC</span>';
+          } else {
+              echo date('d M Y H:i', strtotime($m['kickoff']));
+          }
+        ?>
+      </small></td>
       <td><span class="badge <?= $badges[$m['status']]??'badge-gray' ?>"><?= e($m['status']) ?></span></td>
       <td>
         <a href="matches.php?action=edit&id=<?= e($m['id']) ?>" class="btn btn-outline btn-sm"><span class="material-icons-round">edit</span></a>

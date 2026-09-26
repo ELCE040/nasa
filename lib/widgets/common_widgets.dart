@@ -449,6 +449,7 @@ String formatShortDate(DateTime d) {
 }
 
 String formatTime(DateTime d) {
+  if (d.hour == 0 && d.minute == 0) return 'TBC';
   final h = d.hour % 12 == 0 ? 12 : d.hour % 12;
   final m = d.minute.toString().padLeft(2, '0');
   final ampm = d.hour >= 12 ? 'PM' : 'AM';
