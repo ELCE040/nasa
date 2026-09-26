@@ -54,27 +54,25 @@ try {
     $pdo->prepare("UPDATE leagues SET format = 'group_knockout' WHERE id = 'l6ab63b8dddb11'")->execute();
 
     // 8. Remove ghost teams from NBM Women's team_competitions.
-    // These teams appear only as fixture opponents in the schedule but are NOT official NBM Women members:
-    // - Kukoma Ntopwa Women (t178782255775) - Mayor's Bonanza team
-    // - FCB Nyasa Big Bullets Women (t178785289061) - Mayor's Bonanza team
-    // - Mighty Wanderers Queens (t178782266496) - Mayor's Bonanza team
-    // - Chilomoni Ladies (t178785302088) - Mayor's Bonanza team
-    // - ASCENT ACADEMY (t178979957206928) - old team replaced by ASCENT SOCCER ACADEMY
-    $ghostTeams = [
+    // 8. RESTORE all legitimate NBM Women's teams.
+    // FCB Nyasa Big Bullets Women (t178785289061) and Kukoma Ntopwa Women (t178782255775)
+    // have real played NBM Women matches and ARE legitimate members — they were wrongly removed.
+    // Mighty Wanderers Queens (t178782266496) and Chilomoni Ladies (t178785302088)
+    // have upcoming NBM Women fixtures and should also appear in the standings at 0pts.
+    $restoreTeams = [
         't178782255775',   // Kukoma Ntopwa Women
         't178785289061',   // FCB Nyasa Big Bullets Women
         't178782266496',   // Mighty Wanderers Queens
         't178785302088',   // Chilomoni Ladies
-        't178979957206928' // ASCENT ACADEMY (duplicate of ASCENT SOCCER ACADEMY)
     ];
-    foreach ($ghostTeams as $tid) {
-        $pdo->prepare("DELETE FROM team_competitions WHERE teamId = ? AND leagueId = 'l6aae2aeb1789f'")->execute([$tid]);
-        // Also clear leagueId on teams table if it was wrongly set to NBM Women
-        $pdo->prepare("UPDATE teams SET leagueId = NULL, leagueName = NULL WHERE id = ? AND leagueId = 'l6aae2aeb1789f'")->execute([$tid]);
+    foreach ($restoreTeams as $tid) {
+        // Re-enrol in team_competitions
+        $pdo->prepare("INSERT IGNORE INTO team_competitions (id, teamId, leagueId, competitionRole, enrolledAt)
+            VALUES (CONCAT('tc_', ?, '_l6aae2aeb1789f'), ?, 'l6aae2aeb1789f', 'participant', NOW())")
+            ->execute([$tid, $tid]);
     }
-    // Also remove ghost teams from NBM Women upcoming fixtures (set as private/cancelled)
-    // to prevent them being re-enrolled via match auto-enroll
-    $pdo->prepare("UPDATE matches SET isPrivate = 1 WHERE leagueId = 'l6aae2aeb1789f' AND status = 'upcoming' AND (
+    // Un-hide any upcoming fixtures that were wrongly made private
+    $pdo->prepare("UPDATE matches SET isPrivate = 0 WHERE leagueId = 'l6aae2aeb1789f' AND status = 'upcoming' AND (
         homeTeamId IN ('t178782255775','t178785289061','t178782266496','t178785302088') OR
         awayTeamId IN ('t178782255775','t178785289061','t178782266496','t178785302088')
     )")->execute();
