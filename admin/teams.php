@@ -11,6 +11,9 @@ try {
     if (!in_array('groupName', $teamColumns, true)) {
         $pdo->exec('ALTER TABLE teams ADD COLUMN groupName VARCHAR(50) DEFAULT NULL');
     }
+    if (!in_array('ageGroup', $teamColumns, true)) {
+      $pdo->exec('ALTER TABLE teams ADD COLUMN ageGroup VARCHAR(50) DEFAULT NULL');
+    }
     if (!in_array('dashboardOnly', $teamColumns, true)) {
         $pdo->exec('ALTER TABLE teams ADD COLUMN dashboardOnly TINYINT(1) NOT NULL DEFAULT 0');
     }
@@ -70,6 +73,7 @@ $id     = $_GET['id'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD']==='POST') {
     $op = $_POST['op'] ?? '';
+    $ageGroup = !empty($_POST['ageGroup']) ? trim($_POST['ageGroup']) : null;
     $groupName = !empty($_POST['groupName']) ? trim($_POST['groupName']) : null;
     $wardName = trim($_POST['wardName'] ?? '');
     $isExternal = (int)($_POST['isExternal'] ?? 0) === 1 ? 1 : 0;
@@ -106,19 +110,19 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 
     if ($op === 'create') {
         $nid = 't'.uniqid();
-      $duplicateTeam = $pdo->prepare('SELECT id,name FROM teams WHERE LOWER(TRIM(name))=LOWER(TRIM(?)) LIMIT 1');
-      $duplicateTeam->execute([$_POST['name']]);
+      $duplicateTeam = $pdo->prepare("SELECT id,name FROM teams WHERE LOWER(TRIM(name))=LOWER(TRIM(?)) AND LOWER(TRIM(COALESCE(ageGroup,'')))=LOWER(TRIM(COALESCE(? ,''))) LIMIT 1");
+      $duplicateTeam->execute([$_POST['name'], $ageGroup]);
       if ($duplicateTeam->fetch()) {
-        flash('error', 'A team with this name already exists. Use the existing team instead.');
+        flash('error', 'A team with this name and age group already exists. Use the existing team instead.');
         header('Location: teams.php?action=add'); exit;
       }
         $coachName = trim($_POST['coachName'] ?? '');
         if ($isExternal === 1 && $coachName === '') {
             $coachName = 'External Opponent';
         }
-        $pdo->prepare('INSERT INTO teams (id,name,wardId,wardName,leagueId,leagueName,foundedYear,coachName,sponsorName,groupName,dashboardOnly,isExternal,teamType) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)')
-            ->execute([$nid, $_POST['name'], $_POST['wardId'], $wardName, $_POST['leagueId']?:null, $_POST['leagueName']?:null,
-                   $_POST['foundedYear']?:null, $coachName, $_POST['sponsorName']??null, $groupName, $dashboardOnly, $isExternal, $teamType]);
+        $pdo->prepare('INSERT INTO teams (id,name,wardId,wardName,leagueId,leagueName,foundedYear,coachName,sponsorName,ageGroup,groupName,dashboardOnly,isExternal,teamType) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)')
+          ->execute([$nid, $_POST['name'], $_POST['wardId'], $wardName, $_POST['leagueId']?:null, $_POST['leagueName']?:null,
+               $_POST['foundedYear']?:null, $coachName, $_POST['sponsorName']??null, $ageGroup, $groupName, $dashboardOnly, $isExternal, $teamType]);
         if (!empty($_POST['leagueId'])) {
             try {
                 $pdo->prepare("INSERT INTO team_competitions (id, teamId, leagueId, competitionRole, enrolledAt)
@@ -135,16 +139,16 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         if ($isExternal === 1 && $coachName === '') {
             $coachName = 'External Opponent';
         }
-        $duplicateTeam = $pdo->prepare('SELECT id,name FROM teams WHERE LOWER(TRIM(name))=LOWER(TRIM(?)) AND id<>? LIMIT 1');
-        $duplicateTeam->execute([$_POST['name'], $_POST['id']]);
+        $duplicateTeam = $pdo->prepare("SELECT id,name FROM teams WHERE LOWER(TRIM(name))=LOWER(TRIM(?)) AND LOWER(TRIM(COALESCE(ageGroup,'')))=LOWER(TRIM(COALESCE(? ,''))) AND id<>? LIMIT 1");
+        $duplicateTeam->execute([$_POST['name'], $ageGroup, $_POST['id']]);
         if ($duplicateTeam->fetch()) {
-          flash('error', 'A team with this name already exists.');
+          flash('error', 'A team with this name and age group already exists.');
           header('Location: teams.php?action=edit&id='.urlencode($_POST['id'])); exit;
         }
-        $pdo->prepare('UPDATE teams SET name=?,wardId=?,wardName=?,leagueId=?,leagueName=?,foundedYear=?,coachName=?,sponsorName=?,groupName=?,dashboardOnly=?,isExternal=?,teamType=?,
+        $pdo->prepare('UPDATE teams SET name=?,wardId=?,wardName=?,leagueId=?,leagueName=?,foundedYear=?,coachName=?,sponsorName=?,ageGroup=?,groupName=?,dashboardOnly=?,isExternal=?,teamType=?,
             played=?,won=?,drawn=?,lost=?,goalsFor=?,goalsAgainst=? WHERE id=?')
             ->execute([$_POST['name'],$_POST['wardId'],$wardName,$_POST['leagueId']?:null, $_POST['leagueName']?:null, $_POST['foundedYear']?:null,
-                   $coachName,$_POST['sponsorName']??null, $groupName, $dashboardOnly, $isExternal, $teamType,
+                   $coachName,$_POST['sponsorName']??null, $ageGroup, $groupName, $dashboardOnly, $isExternal, $teamType,
                    $_POST['played']??0,$_POST['won']??0,$_POST['drawn']??0,$_POST['lost']??0,
                    $_POST['goalsFor']??0,$_POST['goalsAgainst']??0,$_POST['id']]);
         if (!empty($_POST['leagueId'])) {
@@ -160,7 +164,37 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     }
     if ($op === 'delete') {
         $pdo->prepare('DELETE FROM teams WHERE id=?')->execute([$_POST['id']]);
-        flash('success','Team deleted.');
+        flash('success','Team permanently deleted from database.');
+        header('Location: teams.php'); exit;
+    }
+    if ($op === 'remove_from_league') {
+        $teamId   = trim($_POST['id'] ?? '');
+        $leagueId = trim($_POST['leagueId'] ?? '');
+        if ($teamId) {
+            if ($leagueId) {
+                $pdo->prepare("UPDATE teams SET leagueId=NULL, leagueName=NULL, groupName=NULL WHERE id=? AND leagueId=?")
+                    ->execute([$teamId, $leagueId]);
+                $pdo->prepare("DELETE FROM team_competitions WHERE teamId=? AND leagueId=?")
+                    ->execute([$teamId, $leagueId]);
+            } else {
+                $pdo->prepare("UPDATE teams SET leagueId=NULL, leagueName=NULL, groupName=NULL WHERE id=?")
+                    ->execute([$teamId]);
+            }
+            flash('success', 'Team removed from competition (team profile kept safe in database).');
+        }
+        header('Location: teams.php'); exit;
+    }
+    if ($op === 'restore_team') {
+        $restoreId   = trim($_POST['restore_id'] ?? '');
+        $restoreName = trim($_POST['restore_name'] ?? '');
+        $restoreWard = trim($_POST['restore_ward'] ?? '');
+        if ($restoreId && $restoreName) {
+            $pdo->prepare("INSERT INTO teams (id, name, wardName, teamType)
+                VALUES (?, ?, ?, 'club')
+                ON DUPLICATE KEY UPDATE name=VALUES(name), wardName=VALUES(wardName)")
+                ->execute([$restoreId, $restoreName, $restoreWard ?: 'Blantyre']);
+            flash('success', 'Team "'.$restoreName.'" successfully restored with all squad players!');
+        }
         header('Location: teams.php'); exit;
     }
 
@@ -235,6 +269,9 @@ require __DIR__.'/header.php';
     <input type="hidden" name="id" value="<?= e($team['id']) ?>"/>
     <div class="form-grid">
       <div class="form-group"><label>Team Name</label><input name="name" required value="<?= e($team['name']) ?>"/></div>
+      <div class="form-group"><label>Age Group *</label><select name="ageGroup" required>
+        <?php foreach (['Senior','U20','U18','U16','U14'] as $age): ?><option value="<?= e($age) ?>" <?= ($team['ageGroup']??'')===$age?'selected':'' ?>><?= e($age) ?></option><?php endforeach; ?>
+      </select></div>
       <div class="form-group"><label>Team Classification *</label>
         <select name="teamType" id="editTeamType">
           <option value="club" <?= ($team['teamType']??'club')==='club' && empty($team['isExternal'])?'selected':'' ?>>🛡️ Registered Club (Full Squad / Players)</option>
@@ -390,6 +427,10 @@ try {
     <input type="hidden" name="op" value="create"/>
     <div class="form-grid">
       <div class="form-group"><label>Team Name *</label><input name="name" required/></div>
+      <div class="form-group"><label>Age Group *</label><select name="ageGroup" required>
+        <option value="">Choose age group...</option>
+        <?php foreach (['Senior','U20','U18','U16','U14'] as $age): ?><option value="<?= e($age) ?>"><?= e($age) ?></option><?php endforeach; ?>
+      </select></div>
       <div class="form-group"><label>Team Classification *</label>
         <select name="teamType" id="addTeamType">
           <option value="club">🛡️ Registered Club (Full Squad / Players)</option>
@@ -483,19 +524,59 @@ try {
             $grouped['__noliga__'][] = $t;
         }
     }
+
+    $recoverableTeams = [];
+    try {
+        $recoverableTeams = $pdo->query("
+            SELECT p.teamId AS id, p.teamName AS name, p.wardName, COUNT(p.id) AS playerCount,
+                   (SELECT COUNT(*) FROM matches m WHERE m.homeTeamId = p.teamId OR m.awayTeamId = p.teamId) AS matchCount
+            FROM players p
+            LEFT JOIN teams t ON t.id = p.teamId
+            WHERE t.id IS NULL AND p.teamId IS NOT NULL AND p.teamId != ''
+            GROUP BY p.teamId, p.teamName, p.wardName
+            HAVING playerCount > 0 OR matchCount > 0
+            ORDER BY playerCount DESC
+        ")->fetchAll();
+    } catch (Throwable $e) {}
   ?>
+
+  <?php if (!empty($recoverableTeams)): ?>
+  <div style="background:rgba(245,197,24,0.08);border:1px solid rgba(245,197,24,0.45);border-radius:12px;padding:18px 22px;margin-bottom:24px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <span class="material-icons-round" style="color:var(--gold);font-size:24px;">restore_from_trash</span>
+      <strong style="color:var(--gold);font-size:15px;">Recover Deleted Teams (Players &amp; Data Preserved)</strong>
+    </div>
+    <p style="color:var(--slate);font-size:13px;line-height:1.5;margin-bottom:14px;">
+      The following clubs were deleted from the teams table, but their registered players and match results are still preserved in the database. Click <strong>Restore</strong> to bring any team back immediately with its squad intact:
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+      <?php foreach($recoverableTeams as $rt): ?>
+      <form method="post" style="display:inline-flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid rgba(245,197,24,0.3);border-radius:8px;padding:8px 14px;">
+        <input type="hidden" name="op" value="restore_team"/>
+        <input type="hidden" name="restore_id" value="<?= e($rt['id']) ?>"/>
+        <input type="hidden" name="restore_name" value="<?= e($rt['name']) ?>"/>
+        <input type="hidden" name="restore_ward" value="<?= e($rt['wardName']) ?>"/>
+        <strong style="color:#fff;font-size:13.5px;"><?= e($rt['name']) ?></strong>
+        <span class="badge badge-blue" style="font-size:11px;"><?= $rt['playerCount'] ?> players</span>
+        <?php if ($rt['matchCount']): ?><span class="badge" style="background:#8b5cf6;color:#fff;font-size:11px;"><?= $rt['matchCount'] ?> matches</span><?php endif; ?>
+        <button type="submit" class="btn btn-gold btn-sm" style="margin-left:6px;font-weight:700;">🔄 Restore</button>
+      </form>
+      <?php endforeach; ?>
+    </div>
+  </div>
+  <?php endif; ?>
 
   <?php foreach($leagues as $L): ?>
     <?php
       $leagueTeams = $grouped[$L['id']] ?? [];
       foreach ($leagueTeams as &$t) {
-        $st = $leagueStats[$L['id']][$t['id']] ?? $overallStats[$t['id']] ?? null;
-        $t['calc_p']  = ($st && $st['played'] > 0) ? $st['played'] : (int)($t['played'] ?? 0);
-        $t['calc_w']  = ($st && $st['played'] > 0) ? $st['won']    : (int)($t['won'] ?? 0);
-        $t['calc_d']  = ($st && $st['played'] > 0) ? $st['drawn']  : (int)($t['drawn'] ?? 0);
-        $t['calc_l']  = ($st && $st['played'] > 0) ? $st['lost']   : (int)($t['lost'] ?? 0);
-        $t['calc_gf'] = ($st && $st['played'] > 0) ? $st['goalsFor'] : (int)($t['goalsFor'] ?? 0);
-        $t['calc_ga'] = ($st && $st['played'] > 0) ? $st['goalsAgainst'] : (int)($t['goalsAgainst'] ?? 0);
+        $st = $leagueStats[$L['id']][$t['id']] ?? null;
+        $t['calc_p']  = ($st && $st['played'] > 0) ? $st['played'] : 0;
+        $t['calc_w']  = ($st && $st['played'] > 0) ? $st['won']    : 0;
+        $t['calc_d']  = ($st && $st['played'] > 0) ? $st['drawn']  : 0;
+        $t['calc_l']  = ($st && $st['played'] > 0) ? $st['lost']   : 0;
+        $t['calc_gf'] = ($st && $st['played'] > 0) ? $st['goalsFor'] : 0;
+        $t['calc_ga'] = ($st && $st['played'] > 0) ? $st['goalsAgainst'] : 0;
         $t['calc_gd'] = $t['calc_gf'] - $t['calc_ga'];
         $t['calc_pts']= ($t['calc_w'] * 3) + $t['calc_d'];
       }
@@ -552,6 +633,7 @@ try {
               <td style="color:var(--slate);font-weight:600;text-align:center"><?= $pos++ ?></td>
               <td>
                 <strong style="color:#fff"><?= e($t['name']) ?></strong>
+                <?php if (!empty($t['ageGroup'])): ?><span class="badge badge-blue" style="font-size:10px;margin-left:4px"><?= e($t['ageGroup']) ?></span><?php endif; ?>
                 <?= ($t['teamType'] ?? '') === 'national' ? '<span class="badge badge-gold" style="font-size:10px;margin-left:4px">🌍 National</span>' : '' ?>
                 <?= ($t['teamType'] ?? '') === 'regional' ? '<span class="badge" style="background:#8b5cf6;color:#fff;font-size:10px;margin-left:4px">⚡ Regional</span>' : '' ?>
                 <?= !empty($t['isExternal']) ? '<span class="badge" style="background:#f59e0b;color:#000;font-size:10px;margin-left:4px;font-weight:700">External</span>' : '' ?>
@@ -572,11 +654,17 @@ try {
               </td>
               <td style="text-align:center"><strong style="color:#D2B059;font-size:15px"><?= $t['calc_pts'] ?></strong></td>
               <td style="text-align:right;white-space:nowrap;">
-                <a href="teams.php?action=edit&id=<?= e($t['id']) ?>" class="btn btn-outline btn-sm" title="Edit / Competitions"><span class="material-icons-round" style="font-size:15px;">edit</span></a>
-                <form method="post" style="display:inline" onsubmit="return confirm('Delete this team?')">
+                <a href="teams.php?action=edit&id=<?= e($t['id']) ?>" class="btn btn-outline btn-sm" title="Edit Club"><span class="material-icons-round" style="font-size:15px;">edit</span></a>
+                <form method="post" style="display:inline" onsubmit="return confirm('Remove <?= e(addslashes($t['name'])) ?> from <?= e(addslashes($L['name'])) ?>?\n\nNOTE: The team profile and squad will be kept safe.')">
+                  <input type="hidden" name="op" value="remove_from_league"/>
+                  <input type="hidden" name="id" value="<?= e($t['id']) ?>"/>
+                  <input type="hidden" name="leagueId" value="<?= e($L['id']) ?>"/>
+                  <button class="btn btn-outline btn-sm" type="submit" title="Remove from this competition" style="color:#f59e0b;border-color:rgba(245,158,11,0.45);"><span class="material-icons-round" style="font-size:15px;vertical-align:middle;">link_off</span> Remove</button>
+                </form>
+                <form method="post" style="display:inline" onsubmit="return confirm('⚠️ DANGER: Permanently delete <?= e(addslashes($t['name'])) ?> and its squad from the database?\n\nIf you only want to take this team out of <?= e(addslashes($L['name'])) ?>, click Cancel and use the yellow Remove button instead.')">
                   <input type="hidden" name="op" value="delete"/>
                   <input type="hidden" name="id" value="<?= e($t['id']) ?>"/>
-                  <button class="btn btn-danger btn-sm" type="submit" title="Delete"><span class="material-icons-round" style="font-size:15px;">delete</span></button>
+                  <button class="btn btn-danger btn-sm" type="submit" title="Delete Club Permanently"><span class="material-icons-round" style="font-size:15px;">delete_forever</span></button>
                 </form>
               </td>
             </tr>
@@ -661,11 +749,11 @@ try {
               </td>
               <td style="text-align:center"><strong style="color:#D2B059;font-size:15px"><?= $t['calc_pts'] ?></strong></td>
               <td style="text-align:right">
-                <a href="teams.php?action=edit&id=<?= e($t['id']) ?>" class="btn btn-outline btn-sm" title="Edit"><span class="material-icons-round">edit</span></a>
-                <form method="post" style="display:inline" onsubmit="return confirm('Delete this team?')">
+                <a href="teams.php?action=edit&id=<?= e($t['id']) ?>" class="btn btn-outline btn-sm" title="Edit Club"><span class="material-icons-round" style="font-size:15px;">edit</span></a>
+                <form method="post" style="display:inline" onsubmit="return confirm('⚠️ DANGER: Permanently delete <?= e(addslashes($t['name'])) ?> and its squad from the database?')">
                   <input type="hidden" name="op" value="delete"/>
                   <input type="hidden" name="id" value="<?= e($t['id']) ?>"/>
-                  <button class="btn btn-danger btn-sm" type="submit" title="Delete"><span class="material-icons-round">delete</span></button>
+                  <button class="btn btn-danger btn-sm" type="submit" title="Delete Club Permanently"><span class="material-icons-round" style="font-size:15px;">delete_forever</span></button>
                 </form>
               </td>
             </tr>
