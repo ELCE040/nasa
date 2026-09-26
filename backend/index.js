@@ -328,7 +328,10 @@ async function calculateLeagueLiveData() {
     if (team.leagueId) enrolledTeamsByComp.add(`${team.leagueId}:${team.id}`);
   }
   for (const match of relevantMatches) {
-    if (match.leagueId) {
+    // Only auto-enrol from matches that have actually been played (or are live).
+    // Upcoming fixtures should not add teams to the standings table.
+    const isPlayed = match.status === 'fullTime' || match.status === 'completed' || match.status === 'live';
+    if (match.leagueId && isPlayed) {
       if (match.homeTeamId) enrolledTeamsByComp.add(`${match.leagueId}:${match.homeTeamId}`);
       if (match.awayTeamId) enrolledTeamsByComp.add(`${match.leagueId}:${match.awayTeamId}`);
     }

@@ -51,14 +51,40 @@ try {
         ->execute(['tc_t179034682757713_l6ab63b8dddb11', 't179034682757713', 'l6ab63b8dddb11']);
 
     // 7. Fix AFCON 2027 league format from 'knockout' to 'group_knockout'
-    // (When format is 'knockout', standings are skipped and the app shows knockout brackets instead of the group table)
     $pdo->prepare("UPDATE leagues SET format = 'group_knockout' WHERE id = 'l6ab63b8dddb11'")->execute();
+
+    // 8. Remove ghost teams from NBM Women's team_competitions.
+    // These teams appear only as fixture opponents in the schedule but are NOT official NBM Women members:
+    // - Kukoma Ntopwa Women (t178782255775) - Mayor's Bonanza team
+    // - FCB Nyasa Big Bullets Women (t178785289061) - Mayor's Bonanza team
+    // - Mighty Wanderers Queens (t178782266496) - Mayor's Bonanza team
+    // - Chilomoni Ladies (t178785302088) - Mayor's Bonanza team
+    // - ASCENT ACADEMY (t178979957206928) - old team replaced by ASCENT SOCCER ACADEMY
+    $ghostTeams = [
+        't178782255775',   // Kukoma Ntopwa Women
+        't178785289061',   // FCB Nyasa Big Bullets Women
+        't178782266496',   // Mighty Wanderers Queens
+        't178785302088',   // Chilomoni Ladies
+        't178979957206928' // ASCENT ACADEMY (duplicate of ASCENT SOCCER ACADEMY)
+    ];
+    foreach ($ghostTeams as $tid) {
+        $pdo->prepare("DELETE FROM team_competitions WHERE teamId = ? AND leagueId = 'l6aae2aeb1789f'")->execute([$tid]);
+        // Also clear leagueId on teams table if it was wrongly set to NBM Women
+        $pdo->prepare("UPDATE teams SET leagueId = NULL, leagueName = NULL WHERE id = ? AND leagueId = 'l6aae2aeb1789f'")->execute([$tid]);
+    }
+    // Also remove ghost teams from NBM Women upcoming fixtures (set as private/cancelled)
+    // to prevent them being re-enrolled via match auto-enroll
+    $pdo->prepare("UPDATE matches SET isPrivate = 1 WHERE leagueId = 'l6aae2aeb1789f' AND status = 'upcoming' AND (
+        homeTeamId IN ('t178782255775','t178785289061','t178782266496','t178785302088') OR
+        awayTeamId IN ('t178782255775','t178785289061','t178782266496','t178785302088')
+    )")->execute();
 
     echo json_encode([
         'ok' => true,
-        'message' => 'Malawi teams, played match m6ab65b382c409, lineups, AFCON format, and fixtures reconciled successfully'
+        'message' => 'All fixes applied: Malawi teams, AFCON format, lineups, ghost team cleanup in NBM Women done.'
     ]);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['ok' => false, 'error' => $e->getMessage()]);
 }
+
