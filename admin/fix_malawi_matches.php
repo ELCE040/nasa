@@ -79,9 +79,21 @@ try {
         awayTeamId IN ('t178782255775','t178785289061','t178782266496','t178785302088')
     )")->execute();
 
+    // 9. Clear phantom stored stats for ASCENT SOCCER ACADEMY (t6ab021f30b022).
+    // Someone manually set played=1,won=1,goalsFor=1 in the teams table even though
+    // it has zero real fullTime matches — making it appear as a duplicate of FACT LADIES.
+    // The admin falls back to stored stats when no match data exists.
+    $pdo->prepare("UPDATE teams SET played=0, won=0, drawn=0, lost=0, goalsFor=0, goalsAgainst=0 WHERE id='t6ab021f30b022'")->execute();
+
+    // 10. ASCENT ACADEMY (t178979957206928) played a real 1-1 draw with MDF LIONESS
+    // but its leagueId is NULL. Enrol it in NBM Women's so it appears in standings properly.
+    $pdo->prepare("UPDATE teams SET leagueId='l6aae2aeb1789f', leagueName='NBM WOMEN,S PREMIERSHIP' WHERE id='t178979957206928'")->execute();
+    $pdo->prepare("INSERT IGNORE INTO team_competitions (id, teamId, leagueId, competitionRole, enrolledAt) VALUES (?, ?, ?, 'participant', NOW())")
+        ->execute(['tc_t178979957206928_l6aae2aeb1789f', 't178979957206928', 'l6aae2aeb1789f']);
+
     echo json_encode([
         'ok' => true,
-        'message' => 'All fixes applied: Malawi teams, AFCON format, lineups, ghost team cleanup in NBM Women done.'
+        'message' => 'All fixes applied: Malawi teams, AFCON format, lineups, ghost team cleanup, ASCENT SOCCER ACADEMY stats cleared.'
     ]);
 } catch (Exception $e) {
     http_response_code(500);
