@@ -2246,7 +2246,7 @@
 
   <!-- Table Panel -->
   <div class="tab-content-panel" id="tab-panel-table">
-    <div class="league-filter-pills" id="league-filter-pills"></div>
+    <div class="league-filter-pills" id="league-filter-pills" style="display:none"></div>
     <div id="table-data-container" class="match-rows-container">
       <div class="skeleton-loader" style="height:60px;margin-bottom:12px"></div>
       <div class="skeleton-loader" style="height:60px;margin-bottom:12px"></div>
@@ -3271,15 +3271,10 @@ function initLeagueTable(standings, leagues) {
 
   const filterWrap = document.getElementById('league-filter-pills');
   if (filterWrap) {
-    const leaguesWithStandings = cachedLeagues.filter(l => cachedStandings.some(s => String(s.leagueId) === String(l.id)));
-    let pillsHtml = '<span data-league-id="" class="league-pill ' + (!selectedLeagueId ? 'active' : '') + '" onclick="applyLeagueFilter(\'\', this)">All Competitions</span>';
-    pillsHtml += leaguesWithStandings.map(l => {
-      const isActive = selectedLeagueId === String(l.id);
-      return '<span data-league-id="' + sanitizeText(l.id) + '" class="league-pill ' + (isActive ? 'active' : '') + '" onclick="applyLeagueFilter(\'' + l.id + '\', this)">' + sanitizeText(l.name) + '</span>';
-    }).join('');
-    filterWrap.innerHTML = pillsHtml;
+    filterWrap.innerHTML = '';
+    filterWrap.style.display = 'none';
   }
-  renderTableRows(selectedLeagueId);
+  renderTableRows(null);
 }
 
 function applyLeagueFilter(lid, pillEl) {
