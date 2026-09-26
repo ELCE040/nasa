@@ -2959,9 +2959,9 @@ function renderResults(matches) {
           '<h3 class="league-name">' + sanitizeText(group.name) + '</h3>' +
           '<span class="league-match-count">' + group.matches.length + ' results</span>' +
         '</div>' +
-        '<span class="league-collapse">+</span>' +
+        '<span class="league-collapse">−</span>' +
       '</div>' +
-      '<div class="league-match-list" style="display:none">' + innerHtml + '</div>' +
+      '<div class="league-match-list">' + innerHtml + '</div>' +
     '</div>';
   }).join('');
   if (window.lucide) lucide.createIcons();

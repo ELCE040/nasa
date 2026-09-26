@@ -50,9 +50,13 @@ try {
     $pdo->prepare("INSERT IGNORE INTO team_competitions (id, teamId, leagueId, competitionRole, enrolledAt) VALUES (?, ?, ?, 'participant', NOW())")
         ->execute(['tc_t179034682757713_l6ab63b8dddb11', 't179034682757713', 'l6ab63b8dddb11']);
 
+    // 7. Fix AFCON 2027 league format from 'knockout' to 'group_knockout'
+    // (When format is 'knockout', standings are skipped and the app shows knockout brackets instead of the group table)
+    $pdo->prepare("UPDATE leagues SET format = 'group_knockout' WHERE id = 'l6ab63b8dddb11'")->execute();
+
     echo json_encode([
         'ok' => true,
-        'message' => 'Malawi teams, played match m6ab65b382c409, lineups, and fixtures reconciled successfully'
+        'message' => 'Malawi teams, played match m6ab65b382c409, lineups, AFCON format, and fixtures reconciled successfully'
     ]);
 } catch (Exception $e) {
     http_response_code(500);
